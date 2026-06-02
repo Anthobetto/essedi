@@ -8,8 +8,8 @@ const authRouter = express.Router()
 
 authRouter.post('/register', async (req, res) => {
     try {
-        const password = req.body.password
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const plainPassword = req.body.password
+        const hashedPassword = await bcrypt.hash(plainPassword, 10)
         const result = await pool.query('INSERT INTO users (name, email, password, phone) VALUES ($1, $2, $3, $4) RETURNING *', [req.body.name, req.body.email, hashedPassword, req.body.phone])
         const user = result.rows[0]
         const { password, ...userWithoutPassword } = user
