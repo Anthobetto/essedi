@@ -5,30 +5,30 @@ import { useState } from "react"
 
 export default function Dashboard() {
     const router = useRouter()
-    const [user, setUser] = useState<{name: string, email: string} | null>(null)
+    const [user, setUser] = useState<{ name: string, email: string } | null>(null)
 
     useEffect(() => {
         const token = localStorage.getItem('token')
-        if (!token) {
+        if(!token) {
             router.push('/login')
         }
 
         const fetchUser = async () => {
-            const response = await fetch('http://localhost:4821/users/me', {
+            const response = await fetch('http://localhost:4821/users/me',{
                 method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {'Authorization': `Bearer ${token}`}
             })
             const data = await response.json()
             setUser(data)
 
         }
-        fetchUser()
 
+        fetchUser()
     }, [])
 
     return (
         <div>
-            {user && <h1>Hola, {user.name}</h1>}
+            {user && <h1>Hello {user.name}</h1>}
         </div>
     )
 }

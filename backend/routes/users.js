@@ -18,6 +18,16 @@ usersRouter.get('/', async (req, res) => {
     }
 })
 
+usersRouter.get('/me', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, name, email, phone FROM users WHERE id = ($1)', [req.user.id])
+        res.json(result.rows[0])
+    }
+    catch(error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
 usersRouter.get('/:id', async (req, res) => {
     try{
         const result = await pool.query('SELECT id, name, email, phone, role FROM users WHERE id = ($1)', [req.params.id])
@@ -28,9 +38,10 @@ usersRouter.get('/:id', async (req, res) => {
     }
 })
 
+
 usersRouter.post('/', async (req, res) => {
     try{
-        const result = await pool.query('INSERT INTO users (name, password, email, phone, role) VALUES ($1, $2, $3, $4) RETURNING *', [req.body.name, req.body.password, req.body.email, req.body.phone, req.body.role])
+        const result = await pool.query('INSERT INTO users (name, password, email, phone, role) VALUES ($1, $2, $3, $4, $5) RETURNING *', [req.body.name, req.body.password, req.body.email, req.body.phone, req.body.role])
         res.json(result.rows[0])
     }
     catch(error){
