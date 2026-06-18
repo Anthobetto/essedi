@@ -6,7 +6,7 @@ import { useState } from "react"
 // Visual-only helper: maps a status string to accent colors (Italian/Argentine flag palette)
 function statusBadgeClasses(status: string) {
     const value = (status || "").toLowerCase()
-    if (["done", "completed", "active", "complete", "finished"].includes(value)) {
+    if (["done", "completed", "active", "complete", "ended"].includes(value)) {
         // green accent
         return "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
     }
