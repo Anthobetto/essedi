@@ -10,7 +10,7 @@ tasksRouter.use(authenticateToken)
 
 tasksRouter.get('/', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM tasks')
+        const result = await pool.query('SELECT tasks.*, projects.name AS project_name, clients.company_name   FROM tasks  LEFT JOIN projects ON tasks.project_id = projects.id LEFT JOIN clients ON projects.client_id = clients.id')
         res.json(result.rows)
     }
     catch (error) {
