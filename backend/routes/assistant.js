@@ -58,18 +58,35 @@ assistantRouter.use(authenticateToken)
 assistantRouter.post('/', async (req, res) => {
     try {
         const { message } = req.body
+        const messages = [{ role: 'user', content: message }]
         let response = await client.messages.create({
             model: process.env.ANTHROPIC_MODEL,
-            max_tokens: 1024,
-            system: 'You are a project management assistant for Essedi. Always respond in the same language the user writes in.',
+            max_tokens: 1234,
+            system: 'You are a project management assistant for Essedi. Always respond in the same language the user writes in. Do not use tables, use simple list and make it user friendly. When the usar has done, should answer with an specific word [CLOSE]',
             tools: tools,
-            messages: [
-                { role: 'user', content: message }
-            ]
+            messages: messages
         })
         while (response.stop_reason === 'tool_use') {
             const toolBlock = response.content.find((block) => block.type === 'tool_use')
+            const toolResult = await executeTool(toolBlock.name, toolBlock.input)
+            messages.push({ role: 'assistant', content: response.content })
+            messages.push({
+                role: 'user',
+                content: [{
+                    type: 'tool_result',
+                    tool_use_id: toolBlock.id,
+                    content: JSON.stringify(toolResult)
+                }]
+            })
+            response = await client.messages.create({
+                model: process.env.ANTHROPIC_MODEL,
+                max_tokens: 1234,
+                system: 'You are a project management assistant for Essedi. Always respond in the same language the user writes in. Do not use tables, use simple list and make it user friendly. When the usar has done, should answer with an specific word [CLOSE]',
+                tools: tools,
+                messages: messages
+            })
         }
+
         console.log(response.stop_reason)
         console.log(response.content)
 
@@ -77,8 +94,8 @@ assistantRouter.post('/', async (req, res) => {
         const filteredText = finalText.filter((block) => block.type === 'text')
         const mapedText = filteredText.map((line) => line.text)
 
-        res.json(mapedText)
 
+        res.json(mapedText)
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
