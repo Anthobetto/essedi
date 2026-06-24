@@ -65,27 +65,15 @@ const tools = [
 
     },
     {
-        name: 'search_tasks',
-        description: 'Retrieves a list of all tasks or searches for a specific tasks by name.',
-        input_schema: {
-            type: 'object',
-            properties: {
-                name: {
-                    type: 'string',
-                    description: 'Name or part of the task name. Optional.'
-                }
-            },
-            required: []
-        }
-    },
-    {
         name: 'get_project_status_and_summary',
         description: 'Retrieves comprehensive raw details of a specific project (including its tasks, deadlines, and current state) to analyze project health, generate progress summaries, suggest advancements, or devise strategic improvements.',
         input_schema: {
             type: 'object',
             properties: {
-                type: 'integer',
-                description: 'The unique ID of the project to look up.'
+                project_id: {
+                    type: 'integer',
+                    description: 'The unique ID of the project to look up.'
+                }
             },
             required: ['project_id']
         }
@@ -123,18 +111,17 @@ async function executeTool(toolName, toolInput) {
     }
     if (toolName === 'search_tasks') {
         const result = await pool.query(
-            'SELECT tasks.*, projects.id AS projects_id, projects.status AS projects_status FROM tasks LEFT JOIN projects ON tasks.project_id = projects.id WHERE tasks.project_id = $1')
+            'SELECT tasks.*, projects.id AS projects_id, projects.status AS projects_status FROM tasks LEFT JOIN projects ON tasks.project_id = projects.id WHERE tasks.project_id = $1', [toolInput.project_id])
         return result.rows
     }
     if (toolName === 'get_project_status_and_summary') {
         const result = await pool.query(
-            'SELECT tasks.*, projects.name AS project_name, projects.status AS project_status FROM tasks LEFT JOIN projects ON tasks.project_id = projects.id WHERE tasks.project_id = $1')
+            'SELECT tasks.*, projects.name AS project_name, projects.status AS project_status FROM tasks LEFT JOIN projects ON tasks.project_id = projects.id WHERE tasks.project_id = $1', [toolInput.project_id])
         return result.rows
     }
     if (toolName === 'get_total_worked_hours') {
         const result = await pool.query(
-            'SELECT COALESCE(SUM(EXTRACT(EPOCH FROM (end_time - start_time)) / 3600), 0) AS total_hours FROM task_hours LEFT JOIN tasks ON task_hours.task_id = tasks.id WHERE tasks.project_id = $1'
-        )
+            'SELECT COALESCE(SUM(EXTRACT(EPOCH FROM (end_time - start_time)) / 3600), 0) AS total_hours FROM task_hours LEFT JOIN tasks ON task_hours.task_id = tasks.id WHERE tasks.project_id = $1', [toolInput.project_id])
         return result.rows
 
     }
