@@ -1,50 +1,61 @@
+
 # Essedi — Project Management Tool
 
 **GRAPHICS | SET-UPS | SIGNS | CARPENTRY**
 
-Essedi is an internal management tool built for Essedi, a creative services company. It was created to assist with the daily management of projects, clients, tasks and budgets — streamlining processes and enabling automatic tracking so the team can focus on what they do best.
+Essedi is an internal management tool designed to streamline operational workflows for a creative services company. It centralizes project, client, task, and budget management, enabling efficient process automation.
 
 ## Features
-- Client and project management
-- Task tracking with status updates
-- Time tracking per task
-- Budget management
-- AI-powered assistant (Claude) for querying and managing data in natural language
-- JWT authentication
+
+* Centralized client and project management.
+* Task tracking with status updates.
+* Time tracking and budget management.
+* Functional integration with Anthropic's Claude API for natural language data querying.
+* Secure authentication using JWT.
 
 ## Tech Stack
-**Backend:** Node.js, Express, PostgreSQL  
-**Frontend:** Next.js, React (TSX), Tailwind CSS  
-**AI:** Claude API (Anthropic) with tool use  
+
+**Backend:** Node.js, Express, PostgreSQL
+
+**Frontend:** Next.js, React (TSX), Tailwind CSS
+
+**AI:** Functional integration with Claude (Anthropic). - *Natural language querying operational; process automation (agents) under active development.*.
+
 **Auth:** JWT + bcrypt
 
 ## Status
-Functional MVP. Basic design with improvements planned.
+
+**Functional MVP.** Core architecture operational; AI-assistant module under active development.
 
 ---
 
-# Essedi — Herramienta de Gestión de Proyectos
+# Essedi — Project Management Tool
 
 **GRAPHICS | SET-UPS | SIGNS | CARPENTRY**
 
-Essedi es una herramienta de gestión interna construida para Essedi, una empresa de servicios creativos. Fue creada para asistir en la gestión diaria de proyectos, clientes, tareas y presupuestos — agilizando procesos y permitiendo un seguimiento automático para que el equipo pueda centrarse en lo que mejor sabe hacer.
+Essedi es una herramienta de gestión interna diseñada para optimizar los flujos de trabajo de una empresa de servicios creativos. Centraliza la gestión de proyectos, clientes, tareas y presupuestos, permitiendo una automatización efectiva de los procesos operativos.
 
 ## Funcionalidades
-- Gestión de clientes y proyectos
-- Seguimiento de tareas con estados
-- Control de horas por tarea
-- Gestión de presupuestos
-- Asistente con IA (Claude) para consultar y gestionar datos en lenguaje natural
-- Autenticación con JWT
+
+* Gestión centralizada de clientes y proyectos.
+* Seguimiento de tareas con actualización de estados.
+* Control de tiempos y gestión de presupuestos.
+* Integración funcional con la API de Anthropic (Claude) para consultas de datos en lenguaje natural.
+* Autenticación segura mediante JWT.
 
 ## Stack Tecnológico
-**Backend:** Node.js, Express, PostgreSQL  
-**Frontend:** Next.js, React (TSX), Tailwind CSS  
-**IA:** Claude API (Anthropic) con uso de herramientas  
+
+**Backend:** Node.js, Express, PostgreSQL
+
+**Frontend:** Next.js, React (TSX), Tailwind CSS
+
+**IA: Integración funcional con Claude (Anthropic). *- Módulo de consultas en lenguaje natural operativo; automatización de procesos (agentes) en fase de implementación.*
+
 **Autenticación:** JWT + bcrypt
 
 ## Estado
-MVP funcional. Diseño básico con mejoras estéticas previstas.
+
+**MVP funcional.** Sistema de gestión y chat operativo; despliegue de automatizaciones en curso.
 
 ---
 
@@ -52,21 +63,26 @@ MVP funcional. Diseño básico con mejoras estéticas previstas.
 
 **GRAPHICS | SET-UPS | SIGNS | CARPENTRY**
 
-Essedi è uno strumento di gestione interno costruito per Essedi, un'azienda di servizi creativi. È stato creato per assistere nella gestione quotidiana di progetti, clienti, attività e preventivi — semplificando i processi e consentendo un monitoraggio automatico affinché il team possa concentrarsi su ciò che sa fare meglio.
+Essedi è uno strumento di gestione interna progettato per ottimizzare i flussi di lavoro operativi di un'azienda di servizi creativi. Centralizza la gestione di progetti, clienti, attività e preventivi, consentendo un'automazione efficiente dei processi.
 
 ## Funzionalità
-- Gestione di clienti e progetti
-- Monitoraggio delle attività con aggiornamenti di stato
-- Tracciamento delle ore per attività
-- Gestione dei preventivi
-- Assistente con IA (Claude) per consultare e gestire i dati in linguaggio naturale
-- Autenticazione con JWT
+
+* Gestione centralizzata di clienti e progetti.
+* Monitoraggio delle attività con aggiornamento dello stato.
+* Tracciamento dei tempi e gestione dei preventivi.
+* Integrazione funzionale con l'API di Anthropic (Claude) per interrogazioni di dati in linguaggio naturale.
+* Autenticazione sicura tramite JWT.
 
 ## Stack Tecnologico
-**Backend:** Node.js, Express, PostgreSQL  
-**Frontend:** Next.js, React (TSX), Tailwind CSS  
-**IA:** Claude API (Anthropic) con uso degli strumenti  
+
+**Backend:** Node.js, Express, PostgreSQL
+
+**Frontend:** Next.js, React (TSX), Tailwind CSS
+
+**IA:** Integrazione funzionale con Claude (Anthropic) - *Sistema di interrogazione in linguaggio naturale operativo; automazione dei processi (agenti) in fase di implementazione.*.
+
 **Autenticazione:** JWT + bcrypt
 
 ## Stato
-MVP funzionale. Design di base con miglioramenti estetici previsti.
+
+**MVP funzionale.** Sistema di gestione e chat operativi; automazione dei processi in fase di distribuzione..
