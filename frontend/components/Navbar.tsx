@@ -1,6 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { LogOut, Menu, X } from "lucide-react"
 
 const navLinks = [
   { href: "/dashboard", label: "Dashboard" },
@@ -11,16 +14,30 @@ const navLinks = [
 ]
 
 export default function Navbar() {
+  const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    router.push("/login")
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-blue-900/40 bg-blue-950 text-white shadow-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
         <Link
-          href="/home"
-          className="text-lg font-semibold tracking-tight transition-colors hover:text-gray-300"
+          href="/dashboard"
+          className="flex items-center transition-opacity hover:opacity-80"
         >
-          Essedi
+          <img
+            src="/logo.png"
+            alt="Essedi"
+            className="h-9 w-auto rounded-md object-contain"
+          />
         </Link>
-        <div className="flex items-center gap-1 sm:gap-2">
+
+        {/* Desktop navigation */}
+        <div className="hidden items-center gap-1 md:flex md:gap-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -30,8 +47,57 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          <button
+            onClick={handleLogout}
+            className="ml-1 inline-flex items-center gap-2 rounded-md border border-blue-800 bg-blue-900/40 px-3 py-2 text-sm font-medium text-gray-100 transition-colors hover:border-red-500/60 hover:bg-red-600 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-950 md:ml-2"
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            Logout
+          </button>
         </div>
+
+        {/* Mobile hamburger toggle */}
+        <button
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="inline-flex items-center justify-center rounded-md p-2 text-gray-200 transition-colors hover:bg-blue-900 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 md:hidden"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+        >
+          {isOpen ? (
+            <X className="h-6 w-6" aria-hidden="true" />
+          ) : (
+            <Menu className="h-6 w-6" aria-hidden="true" />
+          )}
+        </button>
       </nav>
+
+      {/* Mobile menu panel */}
+      {isOpen && (
+        <div className="border-t border-blue-900/40 bg-blue-950 md:hidden">
+          <div className="space-y-1 px-4 py-3 sm:px-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className="block rounded-md px-3 py-2 text-base font-medium text-gray-200 transition-colors hover:bg-blue-900 hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <button
+              onClick={() => {
+                setIsOpen(false)
+                handleLogout()
+              }}
+              className="mt-1 inline-flex w-full items-center gap-2 rounded-md border border-blue-800 bg-blue-900/40 px-3 py-2 text-base font-medium text-gray-100 transition-colors hover:border-red-500/60 hover:bg-red-600 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   )
 }
