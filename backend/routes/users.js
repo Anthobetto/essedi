@@ -1,6 +1,9 @@
 import express from 'express'
 import pool from '../db.js'
+import bcrypt from 'bcrypt'
 import authenticateToken from '../middleware/auth.js'
+import requireRole from '../middleware/requireRole.js'
+
 
 const usersRouter = express.Router()
 
@@ -8,7 +11,7 @@ const usersRouter = express.Router()
 usersRouter.use(authenticateToken)
 
 
-usersRouter.get('/', async (req, res) => {
+usersRouter.get('/', requireRole('admin', 'superadmin'), async (req, res) => {
     try {
         const result = await pool.query('SELECT id, name, email, phone, role FROM users')
         res.json(result.rows)
@@ -28,7 +31,7 @@ usersRouter.get('/me', async (req, res) => {
     }
 })
 
-usersRouter.get('/:id', async (req, res) => {
+usersRouter.get('/:id', requireRole('admin', 'superadmin'), async (req, res) => {
     try{
         const result = await pool.query('SELECT id, name, email, phone, role FROM users WHERE id = ($1)', [req.params.id])
         res.json(result.rows[0])
@@ -39,17 +42,20 @@ usersRouter.get('/:id', async (req, res) => {
 })
 
 
-usersRouter.post('/', async (req, res) => {
-    try{
-        const result = await pool.query('INSERT INTO users (name, password, email, phone, role) VALUES ($1, $2, $3, $4, $5) RETURNING *', [req.body.name, req.body.password, req.body.email, req.body.phone, req.body.role])
-        res.json(result.rows[0])
+usersRouter.post('/', requireRole('admin', 'superadmin'), async (req, res) => {
+    try {
+        const plainPassword = req.body.password
+        const hashedPassword = await bcrypt.hash(plainPassword, 10)
+        const result = await pool.query('INSERT INTO users (name, email, password, role, phone) VALUES ($1, $2, $3, $4, $5) RETURNING *', [req.body.name, req.body.email, hashedPassword, req.body.role, req.body.phone])
+        const { password, ...userWithOutPassword } = result.rows[0]
+        res.json(userWithOutPassword)
     }
-    catch(error){
-        res.status(500).json({error: error.message})
+    catch (error) {
+        res.status(500).json({ error: error.message })
     }
 })
 
-usersRouter.patch('/:id', async(req, res) => {
+usersRouter.patch('/:id', requireRole('admin', 'superadmin'), async(req, res) => {
     try {
         const fields = Object.keys(req.body)
         const values = Object.values(req.body)
@@ -64,7 +70,7 @@ usersRouter.patch('/:id', async(req, res) => {
     }
 })
 
-usersRouter.delete('/:id', async(req, res) => {
+usersRouter.delete('/:id', requireRole('admin', 'superadmin'), async(req, res) => {
      try {
         const result = await pool.query('DELETE FROM users WHERE id = ($1) RETURNING *', [req.params.id])
         res.json(result.rows)
