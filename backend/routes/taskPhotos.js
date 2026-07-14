@@ -38,4 +38,13 @@ uploadRouter.post('/', upload.array('photos', 10), async (req, res) => {
     }
 })
 
+uploadRouter.get('/:task_id', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM task_photos WHERE task_id = $1', [req.params.task_id])
+        res.json(result.rows)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+})
+
 export default uploadRouter
