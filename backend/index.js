@@ -15,7 +15,7 @@ const port = process.env.PORT || 4821
 const app = express()
 
 
-app.use(cors({ origin: 'http://localhost:3000' }))
+app.use(cors({ origin: ['http://localhost:3000', 'https://essedi-production-6264.up.railway.app'] }))
 
 app.use(express.json())
 
