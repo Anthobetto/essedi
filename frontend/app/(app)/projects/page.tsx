@@ -18,7 +18,7 @@ export default function Projects() {
         if (!token) { return router.push('/login') }
 
         const fetchProjects = async () => {
-            const response = await fetch('http://localhost:4821/projects', {
+            const response = await fetch('https://essedi-production.up.railway.app/projects', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -30,7 +30,7 @@ export default function Projects() {
         fetchProjects()
 
         const fetchClients = async () => {
-            const response = await fetch('http://localhost:4821/clients', {
+            const response = await fetch('https://essedi-production.up.railway.app/clients', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -50,7 +50,7 @@ export default function Projects() {
     const saveNewProject = async () => {
         const token = localStorage.getItem('token')
         console.log(client)
-        const response = await fetch('http://localhost:4821/projects', {
+        const response = await fetch('https://essedi-production.up.railway.app/projects', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

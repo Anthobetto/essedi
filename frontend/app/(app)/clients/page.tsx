@@ -18,7 +18,7 @@ export default function Clients() {
         if (!token) { return router.push('/login') }
 
         const fetchClients = async () => {
-            const response = await fetch('http://localhost:4821/clients', {
+            const response = await fetch('https://essedi-production.up.railway.app/clients', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -32,7 +32,7 @@ export default function Clients() {
 
     const saveNewClient = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:4821/clients', {
+        const response = await fetch('https://essedi-production.up.railway.app/clients', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

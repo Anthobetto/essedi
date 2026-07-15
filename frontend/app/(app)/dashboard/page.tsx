@@ -35,7 +35,7 @@ export default function Dashboard() {
         }
 
         const fetchUser = async () => {
-            const response = await fetch('http://localhost:4821/users/me', {
+            const response = await fetch('https://essedi-production.up.railway.app/users/me', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -44,7 +44,7 @@ export default function Dashboard() {
         }
 
         const fetchProjects = async () => {
-            const response = await fetch('http://localhost:4821/projects', {
+            const response = await fetch('https://essedi-production.up.railway.app/projects', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -53,7 +53,7 @@ export default function Dashboard() {
         }
 
         const fetchTasks = async () => {
-            const response = await fetch('http://localhost:4821/tasks', {
+            const response = await fetch('https://essedi-production.up.railway.app/tasks', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
