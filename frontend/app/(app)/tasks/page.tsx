@@ -21,7 +21,7 @@ export default function Tasks() {
         if (!token) { return router.push('/login') }
 
         const fetchTasks = async () => {
-            const response = await fetch('http://localhost:4821/tasks', {
+            const response = await fetch('https://essedi-production.up.railway.app/tasks', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -31,7 +31,7 @@ export default function Tasks() {
         }
 
         const fetchProjects = async () => {
-            const response = await fetch('http://localhost:4821/projects', {
+            const response = await fetch('https://essedi-production.up.railway.app/projects', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -41,7 +41,7 @@ export default function Tasks() {
         }
 
         const fetchUsers = async () => {
-            const response = await fetch('http://localhost:4821/users', {
+            const response = await fetch('https://essedi-production.up.railway.app/users', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -57,7 +57,7 @@ export default function Tasks() {
 
     const saveNewTask = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:4821/tasks', {
+        const response = await fetch('https://essedi-production.up.railway.app/tasks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

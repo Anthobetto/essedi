@@ -17,7 +17,7 @@ export default function Services() {
         if (!token) { return router.push('/login') }
 
         const fetchServices = async () => {
-            const response = await fetch('http://localhost:4821/services', {
+            const response = await fetch('https://essedi-production.up.railway.app/services', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -31,7 +31,7 @@ export default function Services() {
 
     const saveNewService = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:4821/services', {
+        const response = await fetch('https://essedi-production.up.railway.app/services', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
