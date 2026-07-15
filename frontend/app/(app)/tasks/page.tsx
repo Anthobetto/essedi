@@ -141,7 +141,7 @@ export default function Tasks() {
                                     </tr>
                                 ) :
                                     tasks.map((task) => (
-                                        <tr key={task.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50">
+                                        <tr key={task.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50 cursor-pointer" onClick={()=> router.push(`/tasks/${task.id}`)}>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{task.name}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{task.status}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{task.company_name}</td>
