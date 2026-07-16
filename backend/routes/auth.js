@@ -10,6 +10,7 @@ authRouter.post('/login', async (req, res) => {
         const plainPassword = req.body.password
         const result = await pool.query('SELECT id, email, password, role FROM users WHERE email = $1', [req.body.email])
         const user = result.rows[0]
+        console.log('USER FOUND:', user)
         const match = await bcrypt.compare(plainPassword, user.password)
 
         if (!match) {
