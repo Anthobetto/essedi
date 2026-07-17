@@ -3,9 +3,10 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
+    const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const router = useRouter()
+    const [error, setError] = useState('')
 
     const handleLogin = async () => {
         const response = await fetch('https://essedi-production.up.railway.app/auth/login', {
@@ -14,6 +15,12 @@ export default function LoginPage() {
             body: JSON.stringify({ email, password })
         })
         const data = await response.json()
+
+        if (!response.ok) {
+            setError('Email o contraseña incorrectos')
+            return
+        }
+
         localStorage.setItem('token', data.token)
         router.push('/dashboard')
     }
@@ -52,6 +59,7 @@ export default function LoginPage() {
                 >
                     Login
                 </button>
+                {error && <p className="mt-2 text-center text-sm text-red-500">{error}</p>}
             </div>
         </div>
     )
