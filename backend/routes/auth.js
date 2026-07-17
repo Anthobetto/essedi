@@ -10,7 +10,7 @@ authRouter.post('/login', async (req, res) => {
         const plainPassword = req.body.password
         const result = await pool.query('SELECT id, email, password, role FROM users WHERE email = $1', [req.body.email])
         const user = result.rows[0]
-        console.log('USER FOUND:', user)  // ← aquí
+        console.log('USER FOUND:', user)
         const match = await bcrypt.compare(plainPassword, user.password)
 
         if (!match) {
@@ -21,7 +21,7 @@ authRouter.post('/login', async (req, res) => {
         res.json({token})
 
     } catch (error) {
-        console.log('LOGIN ERROR:', error.message, error)  // ← y aquí
+        console.log('LOGIN ERROR:', error.message, error)
         res.status(500).json({ error: error.message })
     }
 })
