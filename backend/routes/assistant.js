@@ -348,9 +348,6 @@ assistantRouter.post('/', async (req, res) => {
             })
         }
 
-        console.log(response.stop_reason)
-        console.log(response.content)
-
         const finalText = response.content
         const filteredText = finalText.filter((block) => block.type === 'text')
         const mapedText = filteredText.map((line) => line.text)
