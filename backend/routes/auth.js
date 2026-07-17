@@ -8,6 +8,7 @@ const authRouter = express.Router()
 authRouter.post('/login', async (req, res) => {
     try {
         const plainPassword = req.body.password
+        console.log('EMAIL RECEIVED:', req.body.email)
         const result = await pool.query('SELECT id, email, password, role FROM users WHERE email = $1', [req.body.email])
         const user = result.rows[0]
         console.log('USER FOUND:', user)
