@@ -14,6 +14,11 @@ dotenv.config()
 const port = process.env.PORT || 4821
 const app = express()
 
+app.use((req, res, next) => {
+    console.log('BODY:', req.body)
+    next()
+})
+
 
 app.use(cors({ origin: ['http://localhost:3000', 'https://essedi-production-6264.up.railway.app'] }))
 
