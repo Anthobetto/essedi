@@ -8,21 +8,21 @@ const authRouter = express.Router()
 authRouter.post('/login', async (req, res) => {
     try {
         const plainPassword = req.body.password
-        console.log('EMAIL RECEIVED:', req.body.email)
         const result = await pool.query('SELECT id, email, password, role FROM users WHERE email = $1', [req.body.email])
         const user = result.rows[0]
-        console.log('USER FOUND:', user)
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' })
+        }
         const match = await bcrypt.compare(plainPassword, user.password)
 
         if (!match) {
             return res.status(401).json({ error: 'Invalid credentials' })
         }
 
-        const token = jwt.sign({id: user.id, email: user.email, role: user.role}, process.env.JWT_SECRET, {expiresIn: '8h'})
-        res.json({token})
+        const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '8h' })
+        res.json({ token })
 
     } catch (error) {
-        console.log('LOGIN ERROR:', error.message, error)
         res.status(500).json({ error: error.message })
     }
 })
