@@ -2,9 +2,11 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 
 export default function Tasks() {
     const router = useRouter()
+    const t = useTranslations('tasks')
     const [tasks, setTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string }[]>([])
     const [projects, setProjects] = useState<{ id: number, client_id: number, name: string, status: string, company_name: string }[]>([])
     const [project, setProject] = useState('')
@@ -15,7 +17,6 @@ export default function Tasks() {
     const [status, setStatus] = useState('pending')
     const [notes, setNotes] = useState('')
 
-
     useEffect(() => {
         const token = localStorage.getItem('token')
         if (!token) { return router.push('/login') }
@@ -25,7 +26,6 @@ export default function Tasks() {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
-
             const data = await response.json()
             setTasks(data)
         }
@@ -35,7 +35,6 @@ export default function Tasks() {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
-
             const data = await response.json()
             setProjects(data)
         }
@@ -45,7 +44,6 @@ export default function Tasks() {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
-
             const data = await response.json()
             setUsers(data)
         }
@@ -65,7 +63,6 @@ export default function Tasks() {
             },
             body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, user_id: user ? parseInt(user) : null, notes })
         })
-
         const data = await response.json()
         setTasks([...tasks, data])
         setIsOpen(false)
@@ -76,13 +73,13 @@ export default function Tasks() {
             <div className="mx-auto max-w-6xl px-5 py-8 md:px-8 md:py-10">
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-semibold text-blue-950">Tasks</h1>
-                        <p className="mt-1 text-sm text-gray-500">Manage your tasks directory</p>
+                        <h1 className="text-2xl font-semibold text-blue-950">{t('title')}</h1>
+                        <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
                     </div>
                     <button onClick={() => setIsOpen(true)}
                         className="rounded-md bg-blue-950 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-900"
                     >
-                        New Task
+                        {t('new')}
                     </button>
                 </div>
 
@@ -90,10 +87,10 @@ export default function Tasks() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                         <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
                             <div className="bg-white p-6 text-center flex flex-col gap-4">
-                                <h2 className="mb-5 text-lg font-semibold text-blue-950">New Task</h2>
+                                <h2 className="mb-5 text-lg font-semibold text-blue-950">{t('new')}</h2>
                                 <div className="flex flex-col gap-3">
-                                    <input placeholder="Service Name" onChange={(e) => setTaskName(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors  focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
-                                    <input placeholder="notes" onChange={(e) => setNotes(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
+                                    <input placeholder={t('taskName')} onChange={(e) => setTaskName(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
+                                    <input placeholder={t('notes')} onChange={(e) => setNotes(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
                                     <select name="select" onChange={(e) => setUser(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950">
                                         {users.map((user) => (
                                             <option key={user.id} value={user.id}>{user.name}</option>
@@ -109,39 +106,40 @@ export default function Tasks() {
                                             className="rounded-md border border-gray-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                                             onClick={() => setIsOpen(false)}
                                         >
-                                            Cancel
+                                            {t('cancel')}
                                         </button>
                                         <button
                                             className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
                                             onClick={() => saveNewTask()}
                                         >
-                                            Save
+                                            {t('save')}
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>)}
+                    </div>
+                )}
                 <div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Name</th>
-                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Client</th>
-                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Project</th>
-                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Date</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('name')}</th>
+                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('status')}</th>
+                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('client')}</th>
+                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('project')}</th>
+                                    <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('date')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {tasks.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-400">Not tasks yet</td>
+                                        <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-400">{t('empty')}</td>
                                     </tr>
                                 ) :
                                     tasks.map((task) => (
-                                        <tr key={task.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50 cursor-pointer" onClick={()=> router.push(`/tasks/${task.id}`)}>
+                                        <tr key={task.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50 cursor-pointer" onClick={() => router.push(`/tasks/${task.id}`)}>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{task.name}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{task.status}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{task.company_name}</td>
