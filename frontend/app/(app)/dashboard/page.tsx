@@ -2,20 +2,18 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { useTranslations } from 'next-intl'
 
-// Visual-only helper: maps a status string to accent colors (Italian/Argentine flag palette)
+
 function statusBadgeClasses(status: string) {
     const value = (status || "").toLowerCase()
     if (["done", "completed", "active", "complete", "ended"].includes(value)) {
-        // green accent
         return "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
     }
     if (["in progress", "in-progress", "ongoing", "pending"].includes(value)) {
-        // celeste accent
         return "bg-sky-50 text-sky-700 ring-1 ring-inset ring-sky-600/20"
     }
     if (["blocked", "overdue", "failed", "cancelled", "canceled"].includes(value)) {
-        // red accent
         return "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
     }
     return "bg-slate-100 text-slate-700 ring-1 ring-inset ring-slate-500/20"
@@ -26,6 +24,7 @@ export default function Dashboard() {
     const [user, setUser] = useState<{ name: string, email: string } | null>(null)
     const [projects, setProjects] = useState<{ id: number, name: string, status: string }[]>([])
     const [tasks, setTasks] = useState<{ id: number, name: string, status: string }[]>([])
+    const t = useTranslations('dashboard')
 
 
     useEffect(() => {
@@ -75,7 +74,7 @@ export default function Dashboard() {
                     {user ? (
                         <>
                             <h1 className="text-3xl font-bold tracking-tight text-blue-950 text-balance">
-                                Hello, {user.name}
+                                {t('greeting')}, {user.name}
                             </h1>
                             <p className="text-sm text-slate-500">{user.email}</p>
                         </>
@@ -91,7 +90,7 @@ export default function Dashboard() {
                     {/* Projects Section */}
                     <section className="flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-shadow hover:shadow-md">
                         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                            <h2 className="text-lg font-semibold text-blue-950">Recent Projects</h2>
+                            <h2>{t('recentProjects')}</h2>
                             <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-blue-950 px-2 text-xs font-medium text-white">
                                 {projects.length}
                             </span>
@@ -100,8 +99,8 @@ export default function Dashboard() {
                             <table className="w-full border-collapse text-left">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/80">
-                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Name</th>
-                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">State</th>
+                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('name')}</th>
+                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('state')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -118,7 +117,7 @@ export default function Dashboard() {
                                     {projects.length === 0 && (
                                         <tr>
                                             <td colSpan={2} className="px-6 py-8 text-center text-sm text-slate-400">
-                                                No projects yet
+                                                {t('noProjects')}
                                             </td>
                                         </tr>
                                     )}
@@ -130,7 +129,7 @@ export default function Dashboard() {
                     {/* Tasks Section */}
                     <section className="flex-1 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-shadow hover:shadow-md">
                         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-                            <h2 className="text-lg font-semibold text-blue-950">Current Tasks</h2>
+                            <h2 className="text-lg font-semibold text-blue-950">{t('currentTasks')}</h2>
                             <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-blue-950 px-2 text-xs font-medium text-white">
                                 {tasks.length}
                             </span>
@@ -139,8 +138,8 @@ export default function Dashboard() {
                             <table className="w-full border-collapse text-left">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/80">
-                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Name</th>
-                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">State</th>
+                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('name')}</th>
+                                        <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">{t('state')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
@@ -157,7 +156,7 @@ export default function Dashboard() {
                                     {tasks.length === 0 && (
                                         <tr>
                                             <td colSpan={2} className="px-6 py-8 text-center text-sm text-slate-400">
-                                                No tasks yet
+                                                {t('noTasks')}
                                             </td>
                                         </tr>
                                     )}
