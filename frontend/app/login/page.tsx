@@ -1,5 +1,4 @@
 'use client'
-import { useTranslations } from 'next-intl'
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -8,7 +7,6 @@ export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
-    const t = useTranslations('login')
 
     const handleLogin = async () => {
         const response = await fetch('https://essedi-production.up.railway.app/auth/login', {
@@ -19,7 +17,7 @@ export default function LoginPage() {
         const data = await response.json()
 
         if (!response.ok) {
-            setError(t('error'))
+            setError('Email o contraseña incorrectos')
             return
         }
 
@@ -37,7 +35,7 @@ export default function LoginPage() {
                         className="h-9 w-auto rounded-md object-contain"
                     />
                 </div>
-                <p className="mt-1 text-center text-sm text-gray-500">{t('subtitle')}</p>
+                <p className="mt-1 text-center text-sm text-gray-500">Accedi al tuo account</p>
 
                 <div className="mt-6 flex flex-col gap-3">
                     <input
@@ -59,7 +57,7 @@ export default function LoginPage() {
                     onClick={handleLogin}
                     className="mt-6 w-full rounded-md bg-blue-950 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-900"
                 >
-                    {t('button')}
+                    Login
                 </button>
                 {error && <p className="mt-2 text-center text-sm text-red-500">{error}</p>}
             </div>
