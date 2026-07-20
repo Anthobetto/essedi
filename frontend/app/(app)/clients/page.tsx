@@ -2,7 +2,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations } from "@/lib/i18n"
 
 export default function Clients() {
     const router = useRouter()
@@ -59,7 +59,7 @@ export default function Clients() {
                         onClick={() => setIsOpen(true)}
                         className="rounded-md bg-blue-950 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-900"
                     >
-                        New Client
+                        {t('new')}
                     </button>
                 </div>
 

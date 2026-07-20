@@ -2,7 +2,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations } from '@/lib/i18n'
 
 export default function Projects() {
     const router = useRouter()

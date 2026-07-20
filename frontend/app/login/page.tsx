@@ -1,7 +1,7 @@
 'use client'
-import { useTranslations } from 'next-intl'
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from '@/lib/i18n'
 
 export default function LoginPage() {
     const router = useRouter()
@@ -37,7 +37,7 @@ export default function LoginPage() {
                         className="h-9 w-auto rounded-md object-contain"
                     />
                 </div>
-                <p className="mt-1 text-center text-sm text-gray-500">{t('subtitle')}</p>
+                <p className="mt-1 text-center text-sm text-gray-500">Accedi al tuo account</p>
 
                 <div className="mt-6 flex flex-col gap-3">
                     <input

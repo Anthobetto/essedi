@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Upload, ImageIcon } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useTranslations } from '@/lib/i18n'
 
 export default function TaskId() {
     const { id } = useParams()
