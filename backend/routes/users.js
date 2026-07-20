@@ -13,7 +13,7 @@ usersRouter.use(authenticateToken)
 
 usersRouter.get('/', requireRole('admin', 'superadmin'), async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, name, email, phone, role FROM users')
+        const result = await pool.query('SELECT id, name, email, phone, role, active FROM users')
         res.json(result.rows)
     }
     catch(error) {
@@ -23,7 +23,7 @@ usersRouter.get('/', requireRole('admin', 'superadmin'), async (req, res) => {
 
 usersRouter.get('/me', async (req, res) => {
     try {
-        const result = await pool.query('SELECT id, name, email, phone FROM users WHERE id = ($1)', [req.user.id])
+        const result = await pool.query('SELECT id, name, email, phone, active FROM users WHERE id = ($1)', [req.user.id])
         res.json(result.rows[0])
     }
     catch(error) {
@@ -33,7 +33,7 @@ usersRouter.get('/me', async (req, res) => {
 
 usersRouter.get('/:id', requireRole('admin', 'superadmin'), async (req, res) => {
     try{
-        const result = await pool.query('SELECT id, name, email, phone, role FROM users WHERE id = ($1)', [req.params.id])
+        const result = await pool.query('SELECT id, name, email, phone, role, active FROM users WHERE id = ($1)', [req.params.id])
         res.json(result.rows[0])
     }
     catch(error) {
