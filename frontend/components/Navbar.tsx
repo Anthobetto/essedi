@@ -4,18 +4,22 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LogOut, Menu, X } from "lucide-react"
-
-const navLinks = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/clients", label: "Clients" },
-  { href: "/projects", label: "Projects" },
-  { href: "/services", label: "Services" },
-  { href: "/tasks", label: "Tasks" },
-]
+import { useTranslations } from "@/lib/i18n"
+import { setLocale, getLocale, Locale } from "@/lib/i18n"
 
 export default function Navbar() {
   const router = useRouter()
+  const [currentLocale, setCurrentLocale] = useState(getLocale())
+  const t = useTranslations('nav')
   const [isOpen, setIsOpen] = useState(false)
+
+  const navLinks = [
+    { href: "/dashboard", label: t('dashboard') },
+    { href: "/clients", label: t('clients') },
+    { href: "/projects", label: t('projects') },
+    { href: "/services", label: t('services') },
+    { href: "/tasks", label: t('tasks') },
+  ]
 
   const handleLogout = () => {
     localStorage.removeItem("token")
@@ -54,6 +58,19 @@ export default function Navbar() {
             <LogOut className="h-4 w-4" aria-hidden="true" />
             Logout
           </button>
+          <div>
+            <select
+              value={currentLocale}
+              onChange={(e) => {
+                setCurrentLocale(e.target.value as Locale)
+                setLocale(e.target.value as Locale)
+              }}
+            >
+              <option value='it'>🇮🇹</option>
+              <option value='es'>🇦🇷</option>
+              <option value='en'>🇬🇧</option>
+            </select>
+          </div>
         </div>
 
         {/* Mobile hamburger toggle */}
@@ -95,6 +112,19 @@ export default function Navbar() {
               <LogOut className="h-4 w-4" aria-hidden="true" />
               Logout
             </button>
+            <div>
+              <select
+                value={currentLocale}
+                onChange={(e) => {
+                  setCurrentLocale(e.target.value as Locale)
+                  setLocale(e.target.value as Locale)
+                }}
+              >
+                <option value='it'>🇮🇹</option>
+                <option value='es'>🇦🇷</option>
+                <option value='en'>🇬🇧</option>
+              </select>
+            </div>
           </div>
         </div>
       )}

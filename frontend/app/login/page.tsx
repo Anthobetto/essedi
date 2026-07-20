@@ -1,12 +1,14 @@
 'use client'
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from '@/lib/i18n'
 
 export default function LoginPage() {
     const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const t = useTranslations('login')
 
     const handleLogin = async () => {
         const response = await fetch('https://essedi-production.up.railway.app/auth/login', {
@@ -17,7 +19,7 @@ export default function LoginPage() {
         const data = await response.json()
 
         if (!response.ok) {
-            setError('Email o contraseña incorrectos')
+            setError(t('error'))
             return
         }
 
@@ -57,7 +59,7 @@ export default function LoginPage() {
                     onClick={handleLogin}
                     className="mt-6 w-full rounded-md bg-blue-950 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-900"
                 >
-                    Login
+                    {t('button')}
                 </button>
                 {error && <p className="mt-2 text-center text-sm text-red-500">{error}</p>}
             </div>
