@@ -1,20 +1,31 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LogOut, Menu, X } from "lucide-react"
 import { useTranslations } from "@/lib/i18n"
 import { setLocale, getLocale, Locale } from "@/lib/i18n"
+import { jwtDecode } from 'jwt-decode'
 
 export default function Navbar() {
   const router = useRouter()
+  const [role, setRole] = useState<string | null>(null)
   const [currentLocale, setCurrentLocale] = useState(getLocale())
   const t = useTranslations('nav')
   const [isOpen, setIsOpen] = useState(false)
 
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      const decoded = jwtDecode<{ role: string }>(token)
+      setRole(decoded.role)
+    }
+  }, [])
+
   const navLinks = [
     { href: "/dashboard", label: t('dashboard') },
+    ...(role === 'superadmin' || role === 'admin' ? [{ href: "/users", label: t('users') }] : []),
     { href: "/clients", label: t('clients') },
     { href: "/projects", label: t('projects') },
     { href: "/services", label: t('services') },
@@ -40,7 +51,6 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Desktop navigation */}
         <div className="hidden items-center gap-1 md:flex md:gap-2">
           {navLinks.map((link) => (
             <Link
@@ -56,7 +66,7 @@ export default function Navbar() {
             className="ml-1 inline-flex items-center gap-2 rounded-md border border-blue-800 bg-blue-900/40 px-3 py-2 text-sm font-medium text-gray-100 transition-colors hover:border-red-500/60 hover:bg-red-600 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-950 md:ml-2"
           >
             <LogOut className="h-4 w-4" aria-hidden="true" />
-            Logout
+            {t('logout')}
           </button>
           <div>
             <select
@@ -73,7 +83,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile hamburger toggle */}
         <button
           onClick={() => setIsOpen((prev) => !prev)}
           className="inline-flex items-center justify-center rounded-md p-2 text-gray-200 transition-colors hover:bg-blue-900 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70 md:hidden"
@@ -88,7 +97,6 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menu panel */}
       {isOpen && (
         <div className="border-t border-blue-900/40 bg-blue-950 md:hidden">
           <div className="space-y-1 px-4 py-3 sm:px-6">
@@ -110,7 +118,7 @@ export default function Navbar() {
               className="mt-1 inline-flex w-full items-center gap-2 rounded-md border border-blue-800 bg-blue-900/40 px-3 py-2 text-base font-medium text-gray-100 transition-colors hover:border-red-500/60 hover:bg-red-600 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70"
             >
               <LogOut className="h-4 w-4" aria-hidden="true" />
-              Logout
+              {t('logout')}
             </button>
             <div>
               <select

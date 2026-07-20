@@ -1,5 +1,6 @@
 {
   "nav": {
+    "users": "Utente",
     "dashboard": "Dashboard",
     "clients": "Clienti",
     "projects": "Progetti",
@@ -100,5 +101,24 @@
     "save": "Salva",
     "uploadedPhotos": "Foto caricate",
     "noPhotos": "Nessuna foto"
+  },
+  "users": {
+    "title": "Utenti",
+    "subtitle": "Gestisci gli utenti del sistema",
+    "new": "Nuovo utente",
+    "name": "Nome",
+    "role": "Ruolo",
+    "email": "Email",
+    "phone": "Telefono",
+    "password": "Password",
+    "worker": "Lavoratore",
+    "admin": "Admin",
+    "superadmin": "Superadmin",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "empty": "Nessun utente",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo utente?",
+    "active": "Attivo",
+    "inactive": "Inattivo"
   }
 }

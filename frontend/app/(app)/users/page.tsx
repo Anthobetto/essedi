@@ -6,30 +6,32 @@ import { useTranslations } from "@/lib/i18n"
 import { Trash2 } from "lucide-react"
 import { jwtDecode } from 'jwt-decode'
 
-export default function Clients() {
+
+export default function Users() {
     const router = useRouter()
-    const t = useTranslations('clients')
-    const [clients, setClients] = useState<{ id: number, company_name: string, contact_name: string, email: string, phone: string, address: string }[]>([])
+    const t = useTranslations('users')
+    const [users, setUsers] = useState<{ id: number, name: string, role: string, email: string, phone: string, active: boolean }[]>([])
     const [isOpen, setIsOpen] = useState(false)
-    const [currentUserRole, setCurrentUserRole] = useState('')
     const [name, setName] = useState('')
-    const [contact, setContact] = useState('')
+    const [password, setPassword] = useState('')
+    const [currentUserRole, setCurrentUserRole] = useState('')
+    const [role, setRole] = useState('worker')
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
-    const [address, setAddress] = useState('')
+
 
     useEffect(() => {
         const token = localStorage.getItem('token')
         if (!token) { return router.push('/login') }
 
         const fetchClients = async () => {
-            const response = await fetch('https://essedi-production.up.railway.app/clients', {
+            const response = await fetch('https://essedi-production.up.railway.app/users', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
 
             const data = await response.json()
-            setClients(data)
+            setUsers(data)
         }
 
         fetchClients()
@@ -38,30 +40,29 @@ export default function Clients() {
         setCurrentUserRole(decoded.role)
     }, [])
 
-    const saveNewClient = async () => {
+    const saveNewUser = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch('https://essedi-production.up.railway.app/clients', {
+        const response = await fetch('https://essedi-production.up.railway.app/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ company_name: name, contact, email, phone, address })
+            body: JSON.stringify({ name, password, role, email, phone })
         })
         const data = await response.json()
-        setClients([...clients, data])
+        setUsers([...users, data])
         setIsOpen(false)
     }
 
-    const deleteClient = async (id: number) => {
+    const deleteUser = async (id: number) => {
         const token = localStorage.getItem('token')
-        await fetch(`https://essedi-production.up.railway.app/clients/${id}`, {
+        await fetch(`https://essedi-production.up.railway.app/users/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         })
-        setClients(clients.filter(clients => clients.id !== id))
+        setUsers(users.filter(user => user.id !== id))
     }
-
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
@@ -85,15 +86,19 @@ export default function Clients() {
                             <h2 className="mb-5 text-lg font-semibold text-blue-950">{t('new')}</h2>
                             <div className="flex flex-col gap-3">
                                 <input
-                                    placeholder={t('clientName')}
+                                    placeholder={t('name')}
                                     onChange={(e) => setName(e.target.value)}
                                     className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
                                 />
-                                <input
-                                    placeholder={t('contactName')}
-                                    onChange={(e) => setContact(e.target.value)}
+                                <select
+                                    onChange={(e) => setRole(e.target.value)}
                                     className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
-                                />
+                                >
+                                    <option value="worker">{t('worker')}</option>
+                                    <option value="admin">{t('admin')}</option>
+                                    <option value="superadmin">{t('superadmin')}</option>
+
+                                </select>
                                 <input
                                     type="email"
                                     placeholder={t('email')}
@@ -106,10 +111,11 @@ export default function Clients() {
                                     className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
                                 />
                                 <input
-                                    placeholder={t('address')}
-                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder={t('password')}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950"
                                 />
+
                             </div>
                             <div className="mt-6 flex justify-end gap-3">
                                 <button
@@ -120,7 +126,7 @@ export default function Clients() {
                                 </button>
                                 <button
                                     className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                                    onClick={() => saveNewClient()}
+                                    onClick={() => saveNewUser()}
                                 >
                                     {t('save')}
                                 </button>
@@ -134,32 +140,34 @@ export default function Clients() {
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="border-b border-gray-100 bg-gray-50">
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('clientName')}</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('contactName')}</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('name')}</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('role')}</th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('email')}</th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('phone')}</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('address')}</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('active')}</th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {clients.length === 0 ? (
+                                {users.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-400">
                                             {t('empty')}
                                         </td>
                                     </tr>
                                 ) : (
-                                    clients.map((client) => (
-                                        <tr key={client.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50">
-                                            <td className="px-4 py-3 text-left text-sm font-medium text-gray-900">{client.company_name}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.contact_name}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.email}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.phone}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.address}</td>
+                                    users.map((user) => (
+                                        <tr key={user.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-left text-sm font-medium text-gray-900">{user.name}</td>
+                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{user.role}</td>
+                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{user.email}</td>
+                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{user.phone}</td>
+                                            <td className="px-4 py-3 text-left text-sm text-gray-600"><span className={user.active ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20  rounded-full px-2.5 py-0.5 text-xs font-medium": "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20  rounded-full px-2.5 py-0.5 text-xs font-medium"}>
+                                                {user.active ? t('active') : t('inactive')}
+                                            </span></td>
                                             {currentUserRole === 'superadmin' && <td className="px-4 py-3 text-left text-sm text-red-600" onClick={() => {
                                                 const confirmed = confirm(t('deleteConfirm'))
-                                                if (confirmed) deleteClient(client.id)
+                                                if (confirmed) deleteUser(user.id)
                                             }}><Trash2 /></td>}
                                         </tr>
                                     ))
