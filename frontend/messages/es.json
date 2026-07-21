@@ -119,6 +119,7 @@
     "empty": "Sin usuarios aún",
     "deleteConfirm": "¿Está seguro que desea borrar este usuario?",
     "active": "Activo",
-    "inactivo": "Inactivo"
+    "inactive": "Inactivo",
+    "inactiveConfirm": "¿Está seguro que desea desactivar el usuario?"
   }
 }
