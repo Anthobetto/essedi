@@ -25,7 +25,7 @@ export default function Users() {
         if (!token) { return router.push('/login') }
 
         const fetchClients = async () => {
-            const response = await fetch('https://essedi-production.up.railway.app/users', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -42,7 +42,7 @@ export default function Users() {
 
     const saveNewUser = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch('https://essedi-production.up.railway.app/users', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ export default function Users() {
 
     const deleteUser = async (id: number) => {
         const token = localStorage.getItem('token')
-        await fetch(`https://essedi-production.up.railway.app/users/${id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         })
@@ -66,7 +66,7 @@ export default function Users() {
 
     const toggleUserActive = async (id: number, active: boolean) => {
         const token = localStorage.getItem('token')
-        const response = await fetch(`https://essedi-production.up.railway.app/users/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

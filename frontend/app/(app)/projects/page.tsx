@@ -20,7 +20,7 @@ export default function Projects() {
         if (!token) { return router.push('/login') }
 
         const fetchProjects = async () => {
-            const response = await fetch('https://essedi-production.up.railway.app/projects', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -30,7 +30,7 @@ export default function Projects() {
         fetchProjects()
 
         const fetchClients = async () => {
-            const response = await fetch('https://essedi-production.up.railway.app/clients', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -45,7 +45,7 @@ export default function Projects() {
 
     const saveNewProject = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch('https://essedi-production.up.railway.app/projects', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

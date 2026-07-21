@@ -26,6 +26,7 @@ export default function Navbar() {
   const navLinks = [
     { href: "/dashboard", label: t('dashboard') },
     ...(role === 'superadmin' || role === 'admin' ? [{ href: "/users", label: t('users') }] : []),
+    { href: "/calendar", label: t('calendar') },
     { href: "/clients", label: t('clients') },
     { href: "/projects", label: t('projects') },
     { href: "/services", label: t('services') },

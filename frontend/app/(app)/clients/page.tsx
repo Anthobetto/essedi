@@ -23,7 +23,7 @@ export default function Clients() {
         if (!token) { return router.push('/login') }
 
         const fetchClients = async () => {
-            const response = await fetch('https://essedi-production.up.railway.app/clients', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -40,7 +40,7 @@ export default function Clients() {
 
     const saveNewClient = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch('https://essedi-production.up.railway.app/clients', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export default function Clients() {
 
     const deleteClient = async (id: number) => {
         const token = localStorage.getItem('token')
-        await fetch(`https://essedi-production.up.railway.app/clients/${id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         })
