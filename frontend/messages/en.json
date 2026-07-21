@@ -6,7 +6,8 @@
     "projects": "Projects",
     "services": "Services",
     "tasks": "Tasks",
-    "logout": "Logout"
+    "logout": "Logout",
+    "calendar": "Calendar"
   },
   "login": {
     "subtitle": "Sign in to your account",

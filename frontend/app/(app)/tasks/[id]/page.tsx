@@ -19,7 +19,7 @@ export default function TaskId() {
         if (!token) { return router.push('/login') }
 
         const fetchTask = async () => {
-            const response = await fetch(`https://essedi-production.up.railway.app/tasks/${id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -29,7 +29,7 @@ export default function TaskId() {
         fetchTask()
 
         const fetchUploadedPhotos = async () => {
-            const response = await fetch(`https://essedi-production.up.railway.app/taskPhotos/${id}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskPhotos/${id}`, {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -47,7 +47,7 @@ export default function TaskId() {
         for (const file of Array.from(photos)) {
             formData.append('photos', file, file.name)
         }
-        const response = await fetch(`https://essedi-production.up.railway.app/taskPhotos`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskPhotos`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}` },
             body: formData

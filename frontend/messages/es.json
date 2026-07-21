@@ -6,7 +6,8 @@
     "projects": "Proyectos",
     "services": "Servicios",
     "tasks": "Tareas",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+     "calendar": "Calendario"
   },
   "login": {
     "subtitle": "Inicia sesión en tu cuenta",

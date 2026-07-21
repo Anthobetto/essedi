@@ -15,7 +15,7 @@ export default function AssistantWidget() {
         const token = localStorage.getItem('token')
         setMessages([...messages, { role: 'user', content: input }])
         setInput('')
-        const response = await fetch('https://essedi-production.up.railway.app/assistant', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assistant`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
