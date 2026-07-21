@@ -64,6 +64,20 @@ export default function Users() {
         setUsers(users.filter(user => user.id !== id))
     }
 
+    const toggleUserActive = async (id: number, active: boolean) => {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`https://essedi-production.up.railway.app/users/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ 'active': active })
+        })
+        const data = await response.json()
+        setUsers(users.map((user) => user.id === id ? data : user))
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <div className="mx-auto max-w-6xl px-5 py-8 md:px-8 md:py-10">
@@ -162,9 +176,33 @@ export default function Users() {
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{user.role}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{user.email}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{user.phone}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600"><span className={user.active ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20  rounded-full px-2.5 py-0.5 text-xs font-medium": "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20  rounded-full px-2.5 py-0.5 text-xs font-medium"}>
-                                                {user.active ? t('active') : t('inactive')}
-                                            </span></td>
+                                            <td className="px-4 py-3 text-left text-sm text-gray-600">
+                                                <div className="flex items-center gap-3">
+                                                    <span
+                                                        className={
+                                                            user.active
+                                                                ? "rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
+                                                                : "rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20"
+                                                        }
+                                                    >
+                                                        {user.active ? t("active") : t("inactive")}
+                                                    </span>
+
+                                                    <label className="relative inline-flex cursor-pointer items-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="peer sr-only"
+                                                            checked={user.active}
+                                                            onChange={() => {
+                                                                const confirmed = confirm(t("inactiveConfirm"))
+                                                                if (confirmed) toggleUserActive(user.id, !user.active)
+                                                            }}
+                                                        />
+                                                        <div className="h-6 w-11 rounded-full bg-red-500 transition-colors peer-checked:bg-green-500 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-gray-400" />
+                                                        <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5" />
+                                                    </label>
+                                                </div>
+                                            </td>
                                             {currentUserRole === 'superadmin' && <td className="px-4 py-3 text-left text-sm text-red-600" onClick={() => {
                                                 const confirmed = confirm(t('deleteConfirm'))
                                                 if (confirmed) deleteUser(user.id)
