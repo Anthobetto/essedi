@@ -30,6 +30,9 @@ projectsRouter.get('/:id', async (req, res) => {
 
 projectsRouter.post('/', async (req, res) => {
     try {
+        if (!req.body.client_id) {
+            return res.status(400).json({ error: 'Client is required' })
+        }
         const result = await pool.query('INSERT INTO projects (name, client_id, status, start_date, end_date, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [req.body.name, req.body.client_id, req.body.status, req.body.start_date, req.body.end_date, req.body.notes])
         res.json(result.rows[0])
     }

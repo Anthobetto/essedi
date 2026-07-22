@@ -3,49 +3,66 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useTranslations } from '@/lib/i18n'
+import { Trash2, Loader2, Pencil } from "lucide-react"
+import { jwtDecode } from 'jwt-decode'
 
 export default function Projects() {
     const router = useRouter()
     const t = useTranslations('projects')
-    const [projects, setProjects] = useState<{ id: number, name: string, status: string, client_id: number, company_name: string, created_at: string }[]>([])
+    const [currentUserRole, setCurrentUserRole] = useState('')
+    const [projects, setProjects] = useState<{ id: number, name: string, status: string, client_id: number, company_name: string, created_at: string, notes: string | null }[]>([])
+    const [editingProject, setEditingProject] = useState<{ id: number, name: string, status: string, client_id: number, company_name: string, created_at: string } | null>(null)
     const [clients, setClients] = useState<{ id: number, company_name: string }[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [projectName, setProjetcName] = useState('')
     const [client, setClient] = useState('')
     const [status, setStatus] = useState('pending')
     const [notes, setNotes] = useState('')
+    const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (!token) { return router.push('/login') }
 
-        const fetchProjects = async () => {
+    const fetchProjects = async () => {
+        try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             const data = await response.json()
             setProjects(data)
+        } finally {
+            setLoading(false)
         }
-        fetchProjects()
+    }
 
-        const fetchClients = async () => {
+    const fetchClients = async () => {
+        try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             const data = await response.json()
             setClients(data)
-            if (data.length > 0) {
-                setClient(data[0].id.toString())
-            }
+        } finally {
+            setLoading(false)
         }
+    }
+
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token) { return router.push('/login') }
+
+        fetchProjects()
         fetchClients()
+
+        const decoded = jwtDecode<{ role: string }>(token)
+        setCurrentUserRole(decoded.role)
     }, [])
 
     const saveNewProject = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,10 +70,34 @@ export default function Projects() {
             },
             body: JSON.stringify({ name: projectName, status, client_id: client ? parseInt(client) : null, notes })
         })
+        setIsOpen(false)
+        fetchProjects()
+    }
+
+    const deleteProject = async (id: number) => {
+        const token = localStorage.getItem('token')
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        setProjects(projects.filter(projects => projects.id !== id))
+    }
+
+    const editProject = async (id: number) => {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ name: projectName, status, client_id: client ? parseInt(client) : null, notes })
+        })
         const data = await response.json()
-        setProjects([...projects, data])
+        setProjects(projects.map(c => c.id === id ? data : c))
         setIsOpen(false)
     }
+
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
@@ -102,13 +143,19 @@ export default function Projects() {
                                 <div className="mt-6 flex justify-end gap-3">
                                     <button
                                         className="rounded-md border border-gray-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                                        onClick={() => setIsOpen(false)}
+                                        onClick={() => {
+                                            setIsOpen(false)
+                                            setEditingProject(null)
+                                        }}
                                     >
                                         {t('cancel')}
                                     </button>
                                     <button
                                         className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                                        onClick={() => saveNewProject()}
+                                        onClick={() => {
+                                            editingProject ? editProject(editingProject.id) : saveNewProject()
+                                            setEditingProject(null)
+                                        }}
                                     >
                                         {t('save')}
                                     </button>
@@ -117,7 +164,11 @@ export default function Projects() {
                         </div>
                     </div>
                 )}
-                <div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
+                {loading ? (
+                    <div className="flex justify-center py-10">
+                        <Loader2 className="h-6 w-6 animate-spin text-blue-950" />
+                    </div>
+                ) : (<div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
@@ -126,6 +177,8 @@ export default function Projects() {
                                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('client')}</th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('status')}</th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('date')}</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -142,6 +195,32 @@ export default function Projects() {
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{project.company_name}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{project.status}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(project.created_at).toLocaleDateString()}</td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    {currentUserRole === 'superadmin' && (
+                                                        <Pencil
+                                                            className="h-4 w-4 cursor-pointer text-blue-600"
+                                                            onClick={() => {
+                                                                setEditingProject(project)
+                                                                setProjetcName(project.name || '')
+                                                                setClient(project.client_id?.toString() || '')
+                                                                setStatus(project.status || '')
+                                                                setNotes(project.notes || '')
+                                                                setIsOpen(true)
+                                                            }}
+                                                        />
+                                                    )}
+                                                    {currentUserRole === 'superadmin' && (
+                                                        <Trash2
+                                                            className="h-4 w-4 cursor-pointer text-red-600"
+                                                            onClick={() => {
+                                                                const confirmed = confirm(t('deleteConfirm'))
+                                                                if (confirmed) deleteProject(project.id)
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))
                                 )}
@@ -149,6 +228,7 @@ export default function Projects() {
                         </table>
                     </div>
                 </div>
+                )}
             </div>
         </div>
     )

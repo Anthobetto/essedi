@@ -36,7 +36,8 @@
     "address": "Indirizzo",
     "cancel": "Annulla",
     "save": "Salva",
-    "empty": "Nessun cliente"
+    "empty": "Nessun cliente",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo cliente?"
   },
   "projects": {
     "title": "Progetti",
@@ -54,7 +55,8 @@
     "pending": "In attesa",
     "in_progress": "In corso",
     "started": "Iniziato",
-    "ended": "Concluso"
+    "ended": "Concluso",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo progetto?"
   },
   "services": {
     "title": "Servizi",
@@ -66,7 +68,8 @@
     "vat": "IVA",
     "cancel": "Annulla",
     "save": "Salva",
-    "empty": "Nessun servizio"
+    "empty": "Nessun servizio",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo servizio?"
   },
   "tasks": {
     "title": "Attività",
@@ -85,7 +88,9 @@
     "pending": "In attesa",
     "in_progress": "In corso",
     "completed": "Completata",
-    "cancelled": "Annullata"
+    "cancelled": "Annullata",
+    "assignees": "Assegnatari",
+    "deleteConfirm": "Sei sicuro di voler eliminare questa attività?"
   },
   "taskDetail": {
     "back": "← Indietro",

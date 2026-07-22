@@ -18,22 +18,23 @@ tasksRouter.get('/', async (req, res) => {
     }
 })
 
-tasksRouter.get('/:id', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM tasks WHERE id = ($1)', [req.params.id])
-        res.json(result.rows[0])
-    }
-    catch (error) {
-        res.status(500).json({ error: error.message })
-    }
-})
-
 tasksRouter.post('/', async (req, res) => {
     try {
-        const result = await pool.query('INSERT INTO tasks (name, status, project_id) VALUES ($1, $2, $3) RETURNING *', [req.body.name, req.body.status, req.body.project_id])
-        res.json(result.rows[0])
-    }
-    catch (error) {
+        const result = await pool.query(
+            'INSERT INTO tasks (name, status, project_id) VALUES ($1, $2, $3) RETURNING *',
+            [req.body.name, req.body.status, req.body.project_id]
+        )
+        const task = result.rows[0]
+
+        if (req.body.user_id) {
+            await pool.query(
+                'INSERT INTO task_user (task_id, user_id) VALUES ($1, $2)',
+                [task.id, req.body.user_id]
+            )
+        }
+
+        res.json(task)
+    } catch (error) {
         res.status(500).json({ error: error.message })
     }
 })
