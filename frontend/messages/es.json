@@ -36,7 +36,8 @@
     "address": "Dirección",
     "cancel": "Cancelar",
     "save": "Guardar",
-    "empty": "Sin clientes aún"
+    "empty": "Sin clientes aún",
+      "deleteConfirm": "¿Está seguro que desea borrar este cliente?"
   },
   "projects": {
     "title": "Proyectos",
@@ -54,7 +55,8 @@
     "pending": "Pendiente",
     "in_progress": "En progreso",
     "started": "Iniciado",
-    "ended": "Finalizado"
+    "ended": "Finalizado",
+    "deleteConfirm": "¿Está seguro que desea borrar este proyecto?"
   },
   "services": {
     "title": "Servicios",
@@ -66,7 +68,8 @@
     "vat": "IVA",
     "cancel": "Cancelar",
     "save": "Guardar",
-    "empty": "Sin servicios aún"
+    "empty": "Sin servicios aún",
+    "deleteConfirm": "¿Está seguro que desea borrar este servicio?"
   },
   "tasks": {
     "title": "Tareas",
@@ -85,7 +88,9 @@
     "pending": "Pendiente",
     "in_progress": "En progreso",
     "completed": "Completada",
-    "cancelled": "Cancelada"
+    "cancelled": "Cancelada",
+    "assignees": "Asignados",
+    "deleteConfirm": "¿Está seguro que desea borrar esta tarea?"
   },
   "taskDetail": {
     "back": "← Volver",

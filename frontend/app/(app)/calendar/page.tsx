@@ -54,7 +54,7 @@ export default function Calendar() {
         start: 'today prev,next title',
         end: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek,multiMonthYear',
       }}
-
+      eventClick={(info) => router.push(`/tasks/${info.event.id}`)}
       initialView="dayGridMonth"
       events={tasks.map((event) => ({ title: event.name, date: event.due_date || event.created_at, id: event.id.toString() }))}
     />

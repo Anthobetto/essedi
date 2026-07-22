@@ -3,13 +3,14 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useTranslations } from "@/lib/i18n"
-import { Trash2 } from "lucide-react"
+import { Trash2, Loader2, Pencil } from "lucide-react"
 import { jwtDecode } from 'jwt-decode'
 
 export default function Clients() {
     const router = useRouter()
     const t = useTranslations('clients')
     const [clients, setClients] = useState<{ id: number, company_name: string, contact_name: string, email: string, phone: string, address: string }[]>([])
+    const [editingClient, setEditingClient] = useState<{ id: number, company_name: string, contact_name: string, email: string, phone: string, address: string } | null>(null)
     const [isOpen, setIsOpen] = useState(false)
     const [currentUserRole, setCurrentUserRole] = useState('')
     const [name, setName] = useState('')
@@ -17,20 +18,26 @@ export default function Clients() {
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
     const [address, setAddress] = useState('')
+    const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (!token) { return router.push('/login') }
 
-        const fetchClients = async () => {
+    const fetchClients = async () => {
+        try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
-
             const data = await response.json()
             setClients(data)
+        } finally {
+            setLoading(false)
         }
+    }
+
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token) { return router.push('/login') }
 
         fetchClients()
 
@@ -40,26 +47,45 @@ export default function Clients() {
 
     const saveNewClient = async () => {
         const token = localStorage.getItem('token')
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ company_name: name, contact, email, phone, address })
+            body: JSON.stringify({ company_name: name, contact_name: contact, email, phone, address })
         })
-        const data = await response.json()
-        setClients([...clients, data])
+
         setIsOpen(false)
+        fetchClients()
     }
 
     const deleteClient = async (id: number) => {
         const token = localStorage.getItem('token')
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         })
-        setClients(clients.filter(clients => clients.id !== id))
+        if (!response.ok) {
+            alert(t('deleteError'))
+            return
+        }
+        setClients(clients.filter(c => c.id !== id))
+    }
+
+    const editClient = async (id: number) => {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/clients/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ company_name: name, contact_name: contact, email, phone, address })
+        })
+        const data = await response.json()
+        setClients(clients.map(c => c.id === id ? data : c))
+        setIsOpen(false)
     }
 
 
@@ -114,13 +140,19 @@ export default function Clients() {
                             <div className="mt-6 flex justify-end gap-3">
                                 <button
                                     className="rounded-md border border-gray-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() => {
+                                        setIsOpen(false)
+                                        setEditingClient(null)
+                                    }}
                                 >
                                     {t('cancel')}
                                 </button>
                                 <button
                                     className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                                    onClick={() => saveNewClient()}
+                                    onClick={() => {
+                                        editingClient ? editClient(editingClient.id) : saveNewClient()
+                                        setEditingClient(null)
+                                    }}
                                 >
                                     {t('save')}
                                 </button>
@@ -128,46 +160,76 @@ export default function Clients() {
                         </div>
                     </div>
                 )}
-
-                <div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
-                    <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
-                            <thead>
-                                <tr className="border-b border-gray-100 bg-gray-50">
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('clientName')}</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('contactName')}</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('email')}</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('phone')}</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('address')}</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {clients.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-400">
-                                            {t('empty')}
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    clients.map((client) => (
-                                        <tr key={client.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50">
-                                            <td className="px-4 py-3 text-left text-sm font-medium text-gray-900">{client.company_name}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.contact_name}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.email}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.phone}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{client.address}</td>
-                                            {currentUserRole === 'superadmin' && <td className="px-4 py-3 text-left text-sm text-red-600" onClick={() => {
-                                                const confirmed = confirm(t('deleteConfirm'))
-                                                if (confirmed) deleteClient(client.id)
-                                            }}><Trash2 /></td>}
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                {loading ? (
+                    <div className="flex justify-center py-10">
+                        <Loader2 className="h-6 w-6 animate-spin text-blue-950" />
                     </div>
-                </div>
+                ) : (
+                    <div className="overflow-hidden rounded-xl border border-gray-100 bg-white">
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="border-b border-gray-100 bg-gray-50">
+                                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('clientName')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('contactName')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('email')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('phone')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('address')}</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {clients.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-400">
+                                                {t('empty')}
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        clients.map((client) => (
+                                            <tr key={client.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50">
+                                                <td className="px-4 py-3 text-left text-sm font-medium text-gray-900">{client.company_name}</td>
+                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{client.contact_name}</td>
+                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{client.email}</td>
+                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{client.phone}</td>
+                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{client.address}</td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        {currentUserRole === 'superadmin' && (
+                                                            <Pencil
+                                                                className="h-4 w-4 cursor-pointer text-blue-600"
+                                                                onClick={() => {
+                                                                    setEditingClient(client)
+                                                                    setName(client.company_name || '')
+                                                                    setContact(client.contact_name || '')
+                                                                    setEmail(client.email || '')
+                                                                    setPhone(client.phone || '')
+                                                                    setAddress(client.address || '')
+                                                                    setIsOpen(true)
+                                                                }}
+                                                            />
+                                                        )}
+                                                        {currentUserRole === 'superadmin' && (
+                                                            <Trash2
+                                                                className="h-4 w-4 cursor-pointer text-red-600"
+                                                                onClick={() => {
+                                                                    const confirmed = confirm(t('deleteConfirm'))
+                                                                    if (confirmed) deleteClient(client.id)
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )
