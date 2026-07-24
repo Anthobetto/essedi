@@ -26,15 +26,18 @@ tasksRouter.post('/', async (req, res) => {
         )
         const task = result.rows[0]
 
-        if (req.body.user_id) {
-            await pool.query(
-                'INSERT INTO task_user (task_id, user_id) VALUES ($1, $2)',
-                [task.id, req.body.user_id]
-            )
+        if (req.body.user_id && req.body.user_id.length > 0) {
+            for (const userId of req.body.user_id) {
+                await pool.query(
+                    'INSERT INTO task_user (task_id, user_id) VALUES ($1, $2)',
+                    [task.id, userId]
+                )
+            }
         }
 
         res.json(task)
     } catch (error) {
+        console.log('TASK POST ERROR:', error.message)
         res.status(500).json({ error: error.message })
     }
 })

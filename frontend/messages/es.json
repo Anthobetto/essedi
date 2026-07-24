@@ -7,7 +7,7 @@
     "services": "Servicios",
     "tasks": "Tareas",
     "logout": "Cerrar sesión",
-     "calendar": "Calendario"
+    "calendar": "Calendario"
   },
   "login": {
     "subtitle": "Inicia sesión en tu cuenta",
@@ -37,7 +37,8 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "empty": "Sin clientes aún",
-      "deleteConfirm": "¿Está seguro que desea borrar este cliente?"
+    "deleteConfirm": "¿Está seguro que desea borrar este cliente?",
+    "deleteError": "No se puede eliminar el cliente: tiene proyectos asociados"
   },
   "projects": {
     "title": "Proyectos",

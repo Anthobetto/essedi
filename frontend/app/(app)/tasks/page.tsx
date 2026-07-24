@@ -11,7 +11,8 @@ export default function Tasks() {
     const router = useRouter()
     const [currentUserRole, setCurrentUserRole] = useState('')
     const t = useTranslations('tasks')
-    const [tasks, setTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string }[]>([])
+    const [tasks, setTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string}[]>([])
+    const [editingTasks, setEditingTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string}  | null >(null)
     const [projects, setProjects] = useState<{ id: number, client_id: number, name: string, status: string, company_name: string }[]>([])
     const [project, setProject] = useState('')
     const [users, setUsers] = useState<{ id: number, name: string }[]>([])
@@ -79,6 +80,21 @@ export default function Tasks() {
         })
         setIsOpen(false)
         fetchTasks()
+    }
+
+     const editTask = async (id: number) => {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, user_id: user, notes })
+        })
+        const data = await response.json()
+        setTasks(tasks.map(task => task.id === id ? data : task))
+        setIsOpen(false)
     }
 
     const deleteTask = async (id: number) => {
@@ -158,11 +174,14 @@ export default function Tasks() {
                                             {t('cancel')}
                                         </button>
                                         <button
-                                            className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                                            onClick={() => saveNewTask()}
-                                        >
-                                            {t('save')}
-                                        </button>
+                                    className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                                    onClick={() => {
+                                        editingTasks ? editTask(editingTasks.id) : saveNewTask()
+                                        setEditingTasks(null)
+                                    }}
+                                >
+                                    {t('save')}
+                                </button>
                                     </div>
                                 </div>
                             </div>
@@ -201,10 +220,30 @@ export default function Tasks() {
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.company_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.project_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(task.created_at).toLocaleDateString()}</td>
-                                                {currentUserRole === 'superadmin' && <td className="px-4 py-3 text-left text-sm text-red-600" onClick={() => {
-                                                    const confirmed = confirm(t('deleteConfirm'))
-                                                    if (confirmed) deleteTask(task.id)
-                                                }}><Trash2 /></td>}
+                                                 <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        {currentUserRole === 'superadmin' && (
+                                                            <Pencil
+                                                                className="h-4 w-4 cursor-pointer text-blue-600"
+                                                                onClick={() => {
+                                                                    setEditingTasks(task)
+                                                                    setTaskName(task.name || '')
+                                                                    setNotes(task.notes || '')
+                                                                    setIsOpen(true)
+                                                                }}
+                                                            />
+                                                        )}
+                                                        {currentUserRole === 'superadmin' && (
+                                                            <Trash2
+                                                                className="h-4 w-4 cursor-pointer text-red-600"
+                                                                onClick={() => {
+                                                                    const confirmed = confirm(t('deleteConfirm'))
+                                                                    if (confirmed) deleteTask(task.id)
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </td>
                                             </tr>
                                         ))}
                                 </tbody>

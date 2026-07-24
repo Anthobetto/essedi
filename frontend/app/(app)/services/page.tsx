@@ -10,11 +10,12 @@ export default function Services() {
     const router = useRouter()
     const t = useTranslations('services')
     const [services, setServices] = useState<{ id: number, name: string, code: string, price: number, vat: number | null }[]>([])
+    const [editingService, setEditingService] = useState<{ id: number, name: string, code: string, price: number, vat: number | null } | null>(null)
     const [isOpen, setIsOpen] = useState(false)
     const [name, setName] = useState('')
     const [code, setCode] = useState('')
     const [price, setPrice] = useState('')
-    const [vat, setVat] = useState(0)
+    const [vat, setVat] = useState('')
     const [currentUserRole, setCurrentUserRole] = useState('')
     const [loading, setLoading] = useState(true)
 
@@ -58,6 +59,21 @@ export default function Services() {
         setIsOpen(false)
     }
 
+     const editService = async (id: number) => {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ name, code, price: price ? parseInt(price) : null, vat })
+        })
+        const data = await response.json()
+        setServices(services.map(service => service.id === id ? data : service))
+        setIsOpen(false)
+    }
+
     const deleteService = async (id: number) => {
         const token = localStorage.getItem('token')
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services/${id}`, {
@@ -90,7 +106,7 @@ export default function Services() {
                                 <input placeholder={t('serviceName')} onChange={(e) => setName(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
                                 <input placeholder={t('code')} onChange={(e) => setCode(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
                                 <input type="number" placeholder={t('price')} onChange={(e) => setPrice(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
-                                <select onChange={(e) => setVat(Number(e.target.value))} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950">
+                                <select onChange={(e) => setVat(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950">
                                     <option value="4">4 %</option>
                                     <option value="10">10 %</option>
                                     <option value="10">22 %</option>
@@ -103,11 +119,14 @@ export default function Services() {
                                         {t('cancel')}
                                     </button>
                                     <button
-                                        className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                                        onClick={() => saveNewService()}
-                                    >
-                                        {t('save')}
-                                    </button>
+                                    className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                                    onClick={() => {
+                                        editingService ? editService(editingService.id) : saveNewService()
+                                        setEditingService(null)
+                                    }}
+                                >
+                                    {t('save')}
+                                </button>
                                 </div>
                             </div>
                         </div>
@@ -146,10 +165,32 @@ export default function Services() {
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{service.code}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{service.price}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{service.vat}</td>
-                                                 {currentUserRole === 'superadmin' && <td className="px-4 py-3 text-left text-sm text-red-600" onClick={() => {
-                                                    const confirmed = confirm(t('deleteConfirm'))
-                                                    if (confirmed) deleteService(service.id)
-                                                }}><Trash2 /></td>}
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        {currentUserRole === 'superadmin' && (
+                                                            <Pencil
+                                                                className="h-4 w-4 cursor-pointer text-blue-600"
+                                                                onClick={() => {
+                                                                    setEditingService(service)
+                                                                    setName(service.name || '')
+                                                                    setCode(service.code || '')
+                                                                    setPrice(service.price?.toString() || '')
+                                                                    setVat(service.vat?.toString() || '')
+                                                                    setIsOpen(true)
+                                                                }}
+                                                            />
+                                                        )}
+                                                        {currentUserRole === 'superadmin' && (
+                                                            <Trash2
+                                                                className="h-4 w-4 cursor-pointer text-red-600"
+                                                                onClick={() => {
+                                                                    const confirmed = confirm(t('deleteConfirm'))
+                                                                    if (confirmed) deleteService(service.id)
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </td>
                                             </tr>
                                         ))}
                                 </tbody>
