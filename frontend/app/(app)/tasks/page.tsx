@@ -12,7 +12,7 @@ export default function Tasks() {
     const [currentUserRole, setCurrentUserRole] = useState('')
     const t = useTranslations('tasks')
     const [tasks, setTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null }[]>([])
-    const [editingTasks, setEditingTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null} | null>(null)
+    const [editingTasks, setEditingTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null } | null>(null)
     const [projects, setProjects] = useState<{ id: number, client_id: number, name: string, status: string, company_name: string }[]>([])
     const [project, setProject] = useState('')
     const [users, setUsers] = useState<{ id: number, name: string }[]>([])
@@ -83,13 +83,13 @@ export default function Tasks() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-           body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, notes })
+            body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, notes })
         })
         setIsOpen(false)
         fetchTasks()
     }
 
-     const editTask = async (id: number) => {
+    const editTask = async (id: number) => {
         const token = localStorage.getItem('token')
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
             method: 'PATCH',
@@ -102,8 +102,8 @@ export default function Tasks() {
         const data = await response.json()
         setTasks(tasks.map(t => t.id === id ? data : t))
         setIsOpen(false)
-        
-     }
+
+    }
 
     const deleteTask = async (id: number) => {
         const token = localStorage.getItem('token')
@@ -210,6 +210,7 @@ export default function Tasks() {
                                         <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('status')}</th>
                                         <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('client')}</th>
                                         <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('project')}</th>
+                                        <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('notes')}</th>
                                         <th className="py-3 px-4 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">{t('date')}</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"></th>
 
@@ -227,20 +228,20 @@ export default function Tasks() {
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.status}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.company_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.project_name}</td>
-                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(task.due_date ||task.created_at).toLocaleDateString()}</td>
+                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{task.notes}</td>
+                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(task.due_date || task.created_at).toLocaleDateString()}</td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-2">
                                                         {currentUserRole === 'superadmin' && (
                                                             <Pencil
                                                                 className="h-4 w-4 cursor-pointer text-blue-600"
-                                                                
+
                                                                 onClick={(e) => {
                                                                     e.stopPropagation()
                                                                     setEditingTasks(task)
                                                                     setTaskName(task.name || '')
                                                                     setNotes(task.notes || '')
                                                                     setIsOpen(true)
-                                                                    console.log(task)
                                                                 }}
                                                             />
                                                         )}
