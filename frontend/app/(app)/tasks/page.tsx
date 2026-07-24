@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useTranslations } from '@/lib/i18n'
-import { Trash2, Loader2, Pencil} from "lucide-react"
+import { Trash2, Loader2, Pencil } from "lucide-react"
 import { jwtDecode } from 'jwt-decode'
 
 
@@ -11,8 +11,8 @@ export default function Tasks() {
     const router = useRouter()
     const [currentUserRole, setCurrentUserRole] = useState('')
     const t = useTranslations('tasks')
-    const [tasks, setTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string}[]>([])
-    const [editingTasks, setEditingTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string}  | null >(null)
+    const [tasks, setTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null }[]>([])
+    const [editingTasks, setEditingTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null} | null>(null)
     const [projects, setProjects] = useState<{ id: number, client_id: number, name: string, status: string, company_name: string }[]>([])
     const [project, setProject] = useState('')
     const [users, setUsers] = useState<{ id: number, name: string }[]>([])
@@ -38,19 +38,26 @@ export default function Tasks() {
         }
     }
 
-
-    useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (!token) { return router.push('/login') }
-
-        const fetchProjects = async () => {
+    const fetchProjects = async () => {
+        try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             const data = await response.json()
             setProjects(data)
+            if (data.length > 0) setProject(data[0].id.toString())
+        } finally {
+            setLoading(false)
         }
+    }
+
+
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token) { return router.push('/login') }
+
 
         const fetchUsers = async () => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
@@ -76,13 +83,13 @@ export default function Tasks() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, user_id: user, notes })
+           body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, notes })
         })
         setIsOpen(false)
         fetchTasks()
     }
 
-     const editTask = async (id: number) => {
+    const editTask = async (id: number) => {
         const token = localStorage.getItem('token')
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
             method: 'PATCH',
@@ -174,14 +181,14 @@ export default function Tasks() {
                                             {t('cancel')}
                                         </button>
                                         <button
-                                    className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                                    onClick={() => {
-                                        editingTasks ? editTask(editingTasks.id) : saveNewTask()
-                                        setEditingTasks(null)
-                                    }}
-                                >
-                                    {t('save')}
-                                </button>
+                                            className="rounded-md bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                                            onClick={() => {
+                                                editingTasks ? editTask(editingTasks.id) : saveNewTask()
+                                                setEditingTasks(null)
+                                            }}
+                                        >
+                                            {t('save')}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -220,16 +227,19 @@ export default function Tasks() {
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.company_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.project_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(task.created_at).toLocaleDateString()}</td>
-                                                 <td className="px-4 py-3">
+                                                <td className="px-4 py-3">
                                                     <div className="flex items-center gap-2">
                                                         {currentUserRole === 'superadmin' && (
                                                             <Pencil
                                                                 className="h-4 w-4 cursor-pointer text-blue-600"
-                                                                onClick={() => {
+                                                                
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
                                                                     setEditingTasks(task)
                                                                     setTaskName(task.name || '')
                                                                     setNotes(task.notes || '')
                                                                     setIsOpen(true)
+                                                                    console.log(task)
                                                                 }}
                                                             />
                                                         )}
