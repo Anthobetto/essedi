@@ -57,7 +57,8 @@
     "in_progress": "In corso",
     "started": "Iniziato",
     "ended": "Concluso",
-    "deleteConfirm": "Sei sicuro di voler eliminare questo progetto?"
+    "deleteConfirm": "Sei sicuro di voler eliminare questo progetto?",
+    "deleteError": "Impossibile eliminare il progetto: ha attività associati"
   },
   "services": {
     "title": "Servizi",
