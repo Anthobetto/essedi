@@ -89,7 +89,7 @@ export default function Tasks() {
         fetchTasks()
     }
 
-    const editTask = async (id: number) => {
+     const editTask = async (id: number) => {
         const token = localStorage.getItem('token')
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
             method: 'PATCH',
@@ -97,12 +97,13 @@ export default function Tasks() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, user_id: user, notes })
+            body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, notes })
         })
         const data = await response.json()
-        setTasks(tasks.map(task => task.id === id ? data : task))
+        setTasks(tasks.map(t => t.id === id ? data : t))
         setIsOpen(false)
-    }
+        
+     }
 
     const deleteTask = async (id: number) => {
         const token = localStorage.getItem('token')
@@ -226,7 +227,7 @@ export default function Tasks() {
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.status}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.company_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.project_name}</td>
-                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(task.created_at).toLocaleDateString()}</td>
+                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(task.due_date ||task.created_at).toLocaleDateString()}</td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex items-center gap-2">
                                                         {currentUserRole === 'superadmin' && (

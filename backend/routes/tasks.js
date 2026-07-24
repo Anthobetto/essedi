@@ -53,6 +53,7 @@ tasksRouter.patch('/:id', async (req, res) => {
         res.json(result.rows[0])
     }
     catch (error) {
+        console.log('TASK POST ERROR:', error.message)
         res.status(500).json({ error: error.message })
     }
 })
