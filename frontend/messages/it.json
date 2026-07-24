@@ -37,7 +37,8 @@
     "cancel": "Annulla",
     "save": "Salva",
     "empty": "Nessun cliente",
-    "deleteConfirm": "Sei sicuro di voler eliminare questo cliente?"
+    "deleteConfirm": "Sei sicuro di voler eliminare questo cliente?",
+    "deleteError": "Impossibile eliminare il cliente: ha progetti associati"
   },
   "projects": {
     "title": "Progetti",

@@ -44,6 +44,7 @@ export default function Projects() {
             })
             const data = await response.json()
             setClients(data)
+            if (data.length > 0) { setClient(data[0].id.toString()) }
         } finally {
             setLoading(false)
         }
