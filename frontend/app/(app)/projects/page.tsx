@@ -77,10 +77,14 @@ export default function Projects() {
 
     const deleteProject = async (id: number) => {
         const token = localStorage.getItem('token')
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         })
+        if (!response.ok) {
+            alert(t('deleteError'))
+            return
+        }
         setProjects(projects.filter(projects => projects.id !== id))
     }
 

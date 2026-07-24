@@ -57,7 +57,8 @@
     "in_progress": "En progreso",
     "started": "Iniciado",
     "ended": "Finalizado",
-    "deleteConfirm": "¿Está seguro que desea borrar este proyecto?"
+    "deleteConfirm": "¿Está seguro que desea borrar este proyecto?",
+    "deleteError": "No se puede eliminar el proyecto: tiene tareas asociadas"
   },
   "services": {
     "title": "Servicios",

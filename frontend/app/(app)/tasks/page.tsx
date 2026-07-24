@@ -177,7 +177,10 @@ export default function Tasks() {
                                     <div className="mt-6 flex justify-end gap-3">
                                         <button
                                             className="rounded-md border border-gray-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                                            onClick={() => setIsOpen(false)}
+                                            onClick={() => {
+                                                setIsOpen(false)
+                                                setEditingTasks(null)
+                                            }}
                                         >
                                             {t('cancel')}
                                         </button>
