@@ -10,7 +10,7 @@ export default function TaskId() {
     const { id } = useParams()
     const router = useRouter()
     const t = useTranslations('taskDetail')
-    const [task, setTask] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string } | null>(null)
+    const [task, setTask] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, due_date: string | null } | null>(null)
     const [photos, setPhotos] = useState<FileList | null>(null)
     const [uploadedPhotos, setUploadedPhotos] = useState<{ url: string }[]>([])
 
