@@ -61,12 +61,22 @@ tasksRouter.post('/', async (req, res) => {
 
 tasksRouter.patch('/:id', async (req, res) => {
     try {
-        const fields = Object.keys(req.body)
-        const values = Object.values(req.body)
+        const { user_id, ...taskBody } = req.body
+        const fields = Object.keys(taskBody)
+        const values = Object.values(taskBody)
         const setClauses = fields.map((field, index) => `${field} = $${index + 1}`)
         const setString = setClauses.join(', ')
 
         const result = await pool.query(`UPDATE tasks SET ${setString} WHERE id = $${fields.length + 1} RETURNING *`, [...values, req.params.id])
+        if (req.body.user_id) {
+            await pool.query('DELETE FROM task_user WHERE task_id = $1', [req.params.id])
+            for (const userId of req.body.user_id) {
+                await pool.query(
+                    'INSERT INTO task_user (task_id, user_id) VALUES ($1, $2)',
+                    [req.params.id, userId]
+                )
+            }
+        }
         res.json(result.rows[0])
     }
     catch (error) {
