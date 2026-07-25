@@ -10,7 +10,7 @@ export default function TaskId() {
     const { id } = useParams()
     const router = useRouter()
     const t = useTranslations('taskDetail')
-    const [task, setTask] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, due_date: string | null } | null>(null)
+    const [task, setTask] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, assignees: { id: number, name: string }[], due_date: string | null } | null>(null)
     const [photos, setPhotos] = useState<FileList | null>(null)
     const [uploadedPhotos, setUploadedPhotos] = useState<{ url: string }[]>([])
     const [success, setSuccess] = useState(false)
@@ -118,6 +118,12 @@ export default function TaskId() {
                                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusBadgeClasses(task.status)}`}>
                                             {task.status.replace('_', ' ')}
                                         </span>
+                                    </dd>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('assignees')}</dt>
+                                    <dd className="text-sm font-medium text-gray-900">
+                                        {task.assignees?.map(a => a.name).join(', ')}
                                     </dd>
                                 </div>
                                 <div className="flex flex-col gap-1">
