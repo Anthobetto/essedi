@@ -81,7 +81,7 @@ export default function Tasks() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, due_date: date, notes, status: 'pending' })
+            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, due_date: date, notes, status: 'pending', user_id: user })
         })
         const data = await response.json()
         setTasks([...tasks, data])
