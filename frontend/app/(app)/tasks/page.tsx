@@ -81,7 +81,7 @@ export default function Tasks() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, due_date: date, notes })
+            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, due_date: date, notes, status: 'pending' })
         })
         const data = await response.json()
         setTasks([...tasks, data])
@@ -126,7 +126,7 @@ export default function Tasks() {
         setTasks(tasks.filter(tasks => tasks.id !== id))
     }
 
-     const statusBadgeClasses = (status: string) => {
+    const statusBadgeClasses = (status: string) => {
         switch (status) {
             case 'completed': return 'bg-green-100 text-green-700'
             case 'in_progress': return 'bg-blue-100 text-blue-700'
@@ -135,7 +135,7 @@ export default function Tasks() {
             default: return 'bg-gray-100 text-gray-600'
         }
     }
-    
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <div className="mx-auto max-w-6xl px-5 py-8 md:px-8 md:py-10">

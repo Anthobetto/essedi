@@ -20,8 +20,15 @@ tasksRouter.get('/', async (req, res) => {
 
 tasksRouter.get('/:id', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM tasks WHERE id = $1', [req.params.id])
-        res.json(result.rows[0])
+        const task = await pool.query(
+            'SELECT tasks.*, projects.name AS project_name, clients.company_name FROM tasks LEFT JOIN projects ON tasks.project_id = projects.id LEFT JOIN clients ON projects.client_id = clients.id WHERE tasks.id = $1',
+            [req.params.id]
+        )
+        const assignees = await pool.query(
+            'SELECT users.id, users.name FROM task_user LEFT JOIN users ON task_user.user_id = users.id WHERE task_user.task_id = $1',
+            [req.params.id]
+        )
+        res.json({ ...task.rows[0], assignees: assignees.rows })
     }
     catch (error) {
         res.status(500).json({ error: error.message })
