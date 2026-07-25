@@ -108,7 +108,8 @@
     "filesSelected": "file(s) selected",
     "save": "Save",
     "uploadedPhotos": "Uploaded Photos",
-    "noPhotos": "No photos yet"
+    "noPhotos": "No photos yet",
+    "uploadSuccess": "Photos uploaded successfully"
   },
   "users": {
     "title": "Users",

@@ -108,7 +108,8 @@
     "filesSelected": "archivo(s) seleccionado(s)",
     "save": "Guardar",
     "uploadedPhotos": "Fotos subidas",
-    "noPhotos": "Sin fotos aún"
+    "noPhotos": "Sin fotos aún",
+    "uploadSuccess": "Fotos subidas correctamente"
   },
   "users": {
     "title": "Usuarios",

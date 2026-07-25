@@ -31,8 +31,8 @@ tasksRouter.get('/:id', async (req, res) => {
 tasksRouter.post('/', async (req, res) => {
     try {
         const result = await pool.query(
-            'INSERT INTO tasks (name, status, project_id) VALUES ($1, $2, $3) RETURNING *',
-            [req.body.name, req.body.status, req.body.project_id]
+            'INSERT INTO tasks (name, status, due_date, notes, project_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [req.body.name, req.body.status, req.body.due_date, req.body.notes, req.body.project_id]
         )
         const task = result.rows[0]
 
