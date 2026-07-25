@@ -13,6 +13,17 @@ export default function TaskId() {
     const [task, setTask] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, due_date: string | null } | null>(null)
     const [photos, setPhotos] = useState<FileList | null>(null)
     const [uploadedPhotos, setUploadedPhotos] = useState<{ url: string }[]>([])
+    const [success, setSuccess] = useState(false)
+
+    const fetchUploadedPhotos = async () => {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskPhotos/${id}`, {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        const data = await response.json()
+        setUploadedPhotos(data)
+    }
 
     useEffect(() => {
         const token = localStorage.getItem('token')
@@ -54,6 +65,9 @@ export default function TaskId() {
         })
         const data = await response.json()
         setPhotos(data)
+        fetchUploadedPhotos()
+        setSuccess(true)
+        setPhotos(null)
     }
 
     const statusBadgeClasses = (status: string) => {
@@ -132,6 +146,7 @@ export default function TaskId() {
                                     <Upload className="h-4 w-4" aria-hidden="true" />
                                     {t('save')}
                                 </button>
+                                {success && <p className="text-sm text-green-600">{t('uploadSuccess')}</p>}
                             </div>
                         </div>
 

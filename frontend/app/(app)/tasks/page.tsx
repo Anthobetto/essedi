@@ -19,6 +19,7 @@ export default function Tasks() {
     const [user, setUser] = useState<string[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [taskName, setTaskName] = useState('')
+    const [date, setDate] = useState('')
     const [notes, setNotes] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -80,7 +81,7 @@ export default function Tasks() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, notes })
+            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, due_date: date, notes })
         })
         const data = await response.json()
         setTasks([...tasks, data])
@@ -125,6 +126,16 @@ export default function Tasks() {
         setTasks(tasks.filter(tasks => tasks.id !== id))
     }
 
+     const statusBadgeClasses = (status: string) => {
+        switch (status) {
+            case 'completed': return 'bg-green-100 text-green-700'
+            case 'in_progress': return 'bg-blue-100 text-blue-700'
+            case 'pending': return 'bg-yellow-100 text-yellow-700'
+            case 'cancelled': return 'bg-red-100 text-red-700'
+            default: return 'bg-gray-100 text-gray-600'
+        }
+    }
+    
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <div className="mx-auto max-w-6xl px-5 py-8 md:px-8 md:py-10">
@@ -148,6 +159,7 @@ export default function Tasks() {
                                 <div className="flex flex-col gap-3">
                                     <input placeholder={t('taskName')} onChange={(e) => setTaskName(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
                                     <input placeholder={t('notes')} onChange={(e) => setNotes(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
+                                    <input placeholder={t('date')} type="date" onChange={(e) => setDate(e.target.value)} className="w-full rounded-md border border-gray-100 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-blue-950 focus:ring-1 focus:ring-blue-950" />
                                     <div className="flex flex-col gap-2 text-left">
                                         <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t('assignees')}</span>
                                         <div className="flex max-h-44 flex-col gap-2 overflow-y-auto rounded-md border border-gray-100 p-2">
@@ -246,7 +258,7 @@ export default function Tasks() {
                                                             (e) => {
                                                                 updateTaskStatus(task.id, e.target.value)
                                                             }}
-                                                        className="rounded-md border border-gray-100 px-2 py-1 text-sm text-gray-900"
+                                                        className={`rounded-md border border-gray-100 px-2 py-1 text-sm text-gray-900 ${statusBadgeClasses(task.status)}`}
                                                     >
                                                         <option value="pending">{t('pending')}</option>
                                                         <option value="in_progress">{t('in_progress')}</option>
