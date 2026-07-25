@@ -18,6 +18,16 @@ tasksRouter.get('/', async (req, res) => {
     }
 })
 
+tasksRouter.get('/:id', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM tasks WHERE id = $1', [req.params.id])
+        res.json(result.rows[0])
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+})
+
 tasksRouter.post('/', async (req, res) => {
     try {
         const result = await pool.query(

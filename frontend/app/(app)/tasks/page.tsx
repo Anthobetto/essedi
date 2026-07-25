@@ -11,31 +11,28 @@ export default function Tasks() {
     const router = useRouter()
     const [currentUserRole, setCurrentUserRole] = useState('')
     const t = useTranslations('tasks')
-    const [tasks, setTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null }[]>([])
-    const [editingTasks, setEditingTasks] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null } | null>(null)
+    const [tasks, setTasks] = useState<{ id: number, project_id: number | null, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null }[]>([])
+    const [editingTasks, setEditingTasks] = useState<{ id: number, project_id: number | null, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, notes: string, due_date: string | null } | null>(null)
     const [projects, setProjects] = useState<{ id: number, client_id: number, name: string, status: string, company_name: string }[]>([])
     const [project, setProject] = useState('')
     const [users, setUsers] = useState<{ id: number, name: string }[]>([])
     const [user, setUser] = useState<string[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [taskName, setTaskName] = useState('')
-    const [status, setStatus] = useState('pending')
     const [notes, setNotes] = useState('')
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
 
 
     const fetchTasks = async () => {
-        try {
-            const token = localStorage.getItem('token')
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-            const data = await response.json()
-            setTasks(data)
-        } finally {
-            setLoading(false)
-        }
+
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        const data = await response.json()
+        setTasks(data)
+
     }
 
     const fetchProjects = async () => {
@@ -77,32 +74,46 @@ export default function Tasks() {
 
     const saveNewTask = async () => {
         const token = localStorage.getItem('token')
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, notes })
+            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, notes })
         })
-        setIsOpen(false)
+        const data = await response.json()
+        setTasks([...tasks, data])
         fetchTasks()
+        setIsOpen(false)
     }
 
     const editTask = async (id: number) => {
         const token = localStorage.getItem('token')
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ status, name: taskName, project_id: project ? parseInt(project) : null, notes })
+            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, notes })
         })
-        const data = await response.json()
-        setTasks(tasks.map(t => t.id === id ? data : t))
+        setTasks(tasks.map(t => t.id === id ? { ...t, name: taskName, notes, project_id: project ? parseInt(project) : null } : t))
         setIsOpen(false)
 
+    }
+
+    const updateTaskStatus = async (id: number, status: string) => {
+        const token = localStorage.getItem('token')
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status })
+        })
+        setTasks(tasks.map(t => t.id === id ? { ...t, status } : t))
     }
 
     const deleteTask = async (id: number) => {
@@ -228,7 +239,21 @@ export default function Tasks() {
                                         tasks.map((task) => (
                                             <tr key={task.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50 cursor-pointer" onClick={() => router.push(`/tasks/${task.id}`)}>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.name}</td>
-                                                <td className="px-4 py-3 text-left text-sm text-gray-600">{task.status}</td>
+                                                <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                                    <select
+                                                        value={task.status}
+                                                        onChange={
+                                                            (e) => {
+                                                                updateTaskStatus(task.id, e.target.value)
+                                                            }}
+                                                        className="rounded-md border border-gray-100 px-2 py-1 text-sm text-gray-900"
+                                                    >
+                                                        <option value="pending">{t('pending')}</option>
+                                                        <option value="in_progress">{t('in_progress')}</option>
+                                                        <option value="completed">{t('completed')}</option>
+                                                        <option value="cancelled">{t('cancelled')}</option>
+                                                    </select>
+                                                </td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.company_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.project_name}</td>
                                                 <td className="px-4 py-3 text-left text-sm text-gray-600">{task.notes}</td>
