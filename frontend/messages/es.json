@@ -109,7 +109,12 @@
     "save": "Guardar",
     "uploadedPhotos": "Fotos subidas",
     "noPhotos": "Sin fotos aún",
-    "uploadSuccess": "Fotos subidas correctamente"
+    "uploadSuccess": "Fotos subidas correctamente",
+    "assignees": "Asignados",
+    "pending": "Pendiente",
+    "in_progress": "En progreso",
+    "completed": "Completada",
+    "cancelled": "Cancelada"
   },
   "users": {
     "title": "Usuarios",

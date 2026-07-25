@@ -109,7 +109,12 @@
     "save": "Save",
     "uploadedPhotos": "Uploaded Photos",
     "noPhotos": "No photos yet",
-    "uploadSuccess": "Photos uploaded successfully"
+    "uploadSuccess": "Photos uploaded successfully",
+    "assignees": "Assignees",
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
   },
   "users": {
     "title": "Users",

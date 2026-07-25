@@ -25,7 +25,7 @@ tasksRouter.get('/:id', async (req, res) => {
             [req.params.id]
         )
         const assignees = await pool.query(
-            'SELECT users.id, users.name FROM task_user LEFT JOIN users ON task_user.user_id = users.id WHERE task_user.task_id = $1',
+            'SELECT users.id, users.name, task_user.status FROM task_user LEFT JOIN users ON task_user.user_id = users.id WHERE task_user.task_id = $1',
             [req.params.id]
         )
         res.json({ ...task.rows[0], assignees: assignees.rows })
@@ -80,6 +80,18 @@ tasksRouter.patch('/:id', async (req, res) => {
         res.json(result.rows[0])
     }
     catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+})
+
+tasksRouter.patch('/:id/status', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'UPDATE task_user SET status = $1 WHERE task_id = $2 AND user_id = $3 RETURNING *',
+            [req.body.status, req.params.id, req.user.id]
+        )
+        res.json(result.rows[0])
+    } catch (error) {
         res.status(500).json({ error: error.message })
     }
 })

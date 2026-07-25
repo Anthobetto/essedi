@@ -1,19 +1,20 @@
 'use client'
 import { useParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
 import { Upload, ImageIcon } from "lucide-react"
-import { useTranslations } from '@/lib/i18n'
+import { useTranslations } from "@/lib/i18n"
+import { jwtDecode } from "jwt-decode"
 
 export default function TaskId() {
     const { id } = useParams()
     const router = useRouter()
     const t = useTranslations('taskDetail')
-    const [task, setTask] = useState<{ id: number, project_id: number, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, assignees: { id: number, name: string }[], due_date: string | null } | null>(null)
+    const [task, setTask] = useState<{ id: number, project_id: number | null, project_name: string, name: string, company_name: string, user_id: number, status: string, created_at: string, due_date: string | null, assignees: { id: number, name: string, status: string }[] } | null>(null)
     const [photos, setPhotos] = useState<FileList | null>(null)
     const [uploadedPhotos, setUploadedPhotos] = useState<{ url: string }[]>([])
     const [success, setSuccess] = useState(false)
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null)
 
     const fetchUploadedPhotos = async () => {
         const token = localStorage.getItem('token')
@@ -29,6 +30,9 @@ export default function TaskId() {
         const token = localStorage.getItem('token')
         if (!token) { return router.push('/login') }
 
+        const decoded = jwtDecode<{ id: number }>(token)
+        setCurrentUserId(decoded.id)
+
         const fetchTask = async () => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}`, {
                 method: 'GET',
@@ -37,16 +41,8 @@ export default function TaskId() {
             const data = await response.json()
             setTask(data)
         }
-        fetchTask()
 
-        const fetchUploadedPhotos = async () => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskPhotos/${id}`, {
-                method: 'GET',
-                headers: { Authorization: `Bearer ${token}` }
-            })
-            const data = await response.json()
-            setUploadedPhotos(data)
-        }
+        fetchTask()
         fetchUploadedPhotos()
     }, [])
 
@@ -58,16 +54,30 @@ export default function TaskId() {
         for (const file of Array.from(photos)) {
             formData.append('photos', file, file.name)
         }
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskPhotos`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskPhotos`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}` },
             body: formData
         })
-        const data = await response.json()
-        setPhotos(data)
+        setPhotos(null)
         fetchUploadedPhotos()
         setSuccess(true)
-        setPhotos(null)
+    }
+
+    const updateMyStatus = async (status: string) => {
+        const token = localStorage.getItem('token')
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${id}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status })
+        })
+        setTask(prev => prev ? {
+            ...prev,
+            assignees: prev.assignees.map(a => a.id === currentUserId ? { ...a, status } : a)
+        } : null)
     }
 
     const statusBadgeClasses = (status: string) => {
@@ -116,20 +126,38 @@ export default function TaskId() {
                                     <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('status')}</dt>
                                     <dd>
                                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusBadgeClasses(task.status)}`}>
-                                            {task.status.replace('_', ' ')}
+                                            {task.status?.replace('_', ' ')}
                                         </span>
-                                    </dd>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('assignees')}</dt>
-                                    <dd className="text-sm font-medium text-gray-900">
-                                        {task.assignees?.map(a => a.name).join(', ')}
                                     </dd>
                                 </div>
                                 <div className="flex flex-col gap-1">
                                     <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('date')}</dt>
                                     <dd className="text-sm font-medium text-gray-900">
                                         {new Date(task.created_at).toLocaleDateString()}
+                                    </dd>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('assignees')}</dt>
+                                    <dd className="text-sm font-medium text-gray-900">
+                                        {task.assignees?.map(a => (
+                                            <div key={a.id} className="flex items-center gap-2">
+                                                <span className="text-sm font-medium text-gray-900">{a.name}</span>
+                                                {a.id === currentUserId ? (
+                                                    <select value={a.status} onChange={(e) => updateMyStatus(e.target.value)} className="rounded-md border border-gray-100 px-2 py-1 text-xs">
+                                                        <option value="pending">{t('pending')}</option>
+                                                        <option value="in_progress">{t('in_progress')}</option>
+                                                        <option value="completed">{t('completed')}</option>
+                                                        <option value="cancelled">{t('cancelled')}</option>
+                                                    </select>
+                                                ) : (
+                                                    <span className={`text-xs rounded-full px-2 py-0.5 ${a.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                                            a.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                                                                a.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                                    'bg-red-100 text-red-700'
+                                                        }`}>{a.status ? t(a.status) : ''}</span>
+                                                )}
+                                            </div>
+                                        ))}
                                     </dd>
                                 </div>
                             </dl>
@@ -152,8 +180,8 @@ export default function TaskId() {
                                     <Upload className="h-4 w-4" aria-hidden="true" />
                                     {t('save')}
                                 </button>
-                                {success && <p className="text-sm text-green-600">{t('uploadSuccess')}</p>}
                             </div>
+                            {success && <p className="mt-2 text-sm text-green-600">{t('uploadSuccess')}</p>}
                         </div>
 
                         <div className="rounded-2xl bg-white p-6 shadow-md sm:p-8">
