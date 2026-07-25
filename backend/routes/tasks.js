@@ -58,6 +58,7 @@ tasksRouter.patch('/:id', async (req, res) => {
 
 tasksRouter.delete('/:id', async (req, res) => {
     try {
+        await pool.query('DELETE FROM task_user WHERE task_id = $1', [req.params.id])
         const result = await pool.query('DELETE FROM tasks WHERE id = ($1) RETURNING *', [req.params.id])
         res.json(result.rows[0])
     }
