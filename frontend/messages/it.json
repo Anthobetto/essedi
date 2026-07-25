@@ -109,7 +109,12 @@
     "save": "Salva",
     "uploadedPhotos": "Foto caricate",
     "noPhotos": "Nessuna foto",
-    "uploadSuccess": "Foto caricate con successo"
+    "uploadSuccess": "Foto caricate con successo",
+    "assignees": "Assegnatari",
+    "pending": "In attesa",
+    "in_progress": "In corso",
+    "completed": "Completata",
+    "cancelled": "Annullata"
   },
   "users": {
     "title": "Utenti",

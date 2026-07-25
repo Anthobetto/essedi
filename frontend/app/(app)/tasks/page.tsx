@@ -97,7 +97,7 @@ export default function Tasks() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, notes })
+            body: JSON.stringify({ name: taskName, project_id: project ? parseInt(project) : null, notes, user_id: user})
         })
         setTasks(tasks.map(t => t.id === id ? { ...t, name: taskName, notes, project_id: project ? parseInt(project) : null } : t))
         setIsOpen(false)
