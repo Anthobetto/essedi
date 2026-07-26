@@ -251,7 +251,6 @@ const tools = [
 ]
 
 async function executeTool(toolName, toolInput) {
-    console.log('TOOL CALLED:', toolName, toolInput)
     if (toolName === 'search_client') {
         const result = await pool.query('SELECT * FROM clients')
         return result.rows
@@ -269,7 +268,6 @@ async function executeTool(toolName, toolInput) {
             params.push(toolInput.project_id)
         }
         const result = await pool.query(query, params)
-        console.log('TASKS RESULT:', result.rows)
         return result.rows
     }
     if (toolName === 'get_project_status_and_summary') {
@@ -330,7 +328,9 @@ assistantRouter.post('/', async (req, res) => {
         let response = await client.messages.create({
             model: process.env.ANTHROPIC_MODEL,
             max_tokens: 1234,
-            system: 'You are a project management assistant for Essedi. ALWAYS use the available tools to fetch real data before answering any question about tasks, projects, clients or services. Never assume data is empty without checking with tools first. Always respond in the same language the user writes in. Do not use tables, use simple list and make it user friendly.', messages: messages
+            system: 'You are a project management assistant for Essedi. Always respond in the same language the user writes in. Do not use tables, use simple list and make it user friendly. When the usar has done, should answer with an specific word [CLOSE]',
+            tools: tools,
+            messages: messages
         })
         while (response.stop_reason === 'tool_use') {
             const toolBlock = response.content.find((block) => block.type === 'tool_use')
