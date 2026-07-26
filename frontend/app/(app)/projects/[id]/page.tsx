@@ -84,10 +84,6 @@ export default function TaskId() {
                                     <dd className="text-sm font-medium text-gray-900">{project.name}</dd>
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('project')}</dt>
-                                    <dd className="text-sm font-medium text-gray-900">{project.project_name}</dd>
-                                </div>
-                                <div className="flex flex-col gap-1">
                                     <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('client')}</dt>
                                     <dd className="text-sm font-medium text-gray-900">{project.company_name}</dd>
                                 </div>
