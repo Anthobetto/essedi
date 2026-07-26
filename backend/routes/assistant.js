@@ -20,7 +20,7 @@ const tools = [
                     description: 'Name or part of the client name.'
                 }
             },
-            required: ['name']
+            required: []
         }
     },
     {
@@ -144,11 +144,11 @@ const tools = [
                     type: 'string',
                     description: 'Initial project status: pending, in_progress, started, or ended. Defaults to pending.'
                 },
-                 end_date: {
+                end_date: {
                     type: 'string',
                     description: 'Expected end date for the project. Optional.'
                 },
-                 notes: {
+                notes: {
                     type: 'string',
                     description: 'Additional notes about the project. Optional.'
                 }
@@ -209,48 +209,49 @@ const tools = [
         }
     },
     {
-    name: 'create_budget',
-    description: 'Creates a new budget for a client, including the list of services with their quantities and prices. Calculates and stores the total automatically.',
-    input_schema: {
-        type: 'object',
-        properties: {
-            number: {
-                type: 'string',
-                description: 'Unique budget reference number, e.g. PRES-2026-001.'
-            },
-            client_id: {
-                type: 'integer',
-                description: 'ID of the client this budget is for. Use search_client first to get the ID.'
-            },
-            status: {
-                type: 'string',
-                description: 'Budget status: draft, submitted, accepted, or rejected. Defaults to draft.'
-            },
-            valid_until: {
-                type: 'string',
-                description: 'Expiration date of the budget. Optional.'
-            },
-            services: {
-                type: 'array',
-                description: 'List of services included in the budget, each with service_id, quantity, and unit_price.',
-                items: {
-                    type: 'object',
-                    properties: {
-                        service_id: { type: 'integer', description: 'ID of the service. Use search results from the services table.' },
-                        quantity: { type: 'integer', description: 'Quantity of this service.' },
-                        unit_price: { type: 'number', description: 'Price per unit for this service.' }
-                    },
-                    required: ['service_id', 'quantity', 'unit_price']
+        name: 'create_budget',
+        description: 'Creates a new budget for a client, including the list of services with their quantities and prices. Calculates and stores the total automatically.',
+        input_schema: {
+            type: 'object',
+            properties: {
+                number: {
+                    type: 'string',
+                    description: 'Unique budget reference number, e.g. PRES-2026-001.'
+                },
+                client_id: {
+                    type: 'integer',
+                    description: 'ID of the client this budget is for. Use search_client first to get the ID.'
+                },
+                status: {
+                    type: 'string',
+                    description: 'Budget status: draft, submitted, accepted, or rejected. Defaults to draft.'
+                },
+                valid_until: {
+                    type: 'string',
+                    description: 'Expiration date of the budget. Optional.'
+                },
+                services: {
+                    type: 'array',
+                    description: 'List of services included in the budget, each with service_id, quantity, and unit_price.',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            service_id: { type: 'integer', description: 'ID of the service. Use search results from the services table.' },
+                            quantity: { type: 'integer', description: 'Quantity of this service.' },
+                            unit_price: { type: 'number', description: 'Price per unit for this service.' }
+                        },
+                        required: ['service_id', 'quantity', 'unit_price']
+                    }
                 }
-            }
-        },
-        required: ['number', 'client_id', 'services']
+            },
+            required: ['number', 'client_id', 'services']
+        }
     }
-}
 
 ]
 
 async function executeTool(toolName, toolInput) {
+    console.log('TOOL CALLED:', toolName, toolInput)
     if (toolName === 'search_client') {
         const result = await pool.query('SELECT * FROM clients')
         return result.rows
@@ -261,8 +262,14 @@ async function executeTool(toolName, toolInput) {
         return result.rows
     }
     if (toolName === 'search_tasks') {
-        const result = await pool.query(
-            'SELECT tasks.*, projects.id AS projects_id, projects.status AS projects_status FROM tasks LEFT JOIN projects ON tasks.project_id = projects.id WHERE tasks.project_id = $1', [toolInput.project_id])
+        let query = 'SELECT tasks.*, projects.name AS project_name, clients.company_name FROM tasks LEFT JOIN projects ON tasks.project_id = projects.id LEFT JOIN clients ON projects.client_id = clients.id'
+        const params = []
+        if (toolInput.project_id) {
+            query += ' WHERE tasks.project_id = $1'
+            params.push(toolInput.project_id)
+        }
+        const result = await pool.query(query, params)
+        console.log('TASKS RESULT:', result.rows)
         return result.rows
     }
     if (toolName === 'get_project_status_and_summary') {
@@ -294,23 +301,23 @@ async function executeTool(toolName, toolInput) {
         return result.rows
     }
     if (toolName === 'create_budget') {
-    const total = toolInput.services.reduce((sum, s) => sum + (s.quantity * s.unit_price), 0)
+        const total = toolInput.services.reduce((sum, s) => sum + (s.quantity * s.unit_price), 0)
 
-    const budgetResult = await pool.query(
-        'INSERT INTO budgets (number, status, total, valid_until) VALUES ($1, $2, $3, $4) RETURNING *',
-        [toolInput.number, toolInput.status || 'draft', total, toolInput.valid_until]
-    )
-    const budget = budgetResult.rows[0]
-
-    for (const service of toolInput.services) {
-        await pool.query(
-            'INSERT INTO budget_services (budget_id, service_id, quantity, unit_price) VALUES ($1, $2, $3, $4)',
-            [budget.id, service.service_id, service.quantity, service.unit_price]
+        const budgetResult = await pool.query(
+            'INSERT INTO budgets (number, status, total, valid_until) VALUES ($1, $2, $3, $4) RETURNING *',
+            [toolInput.number, toolInput.status || 'draft', total, toolInput.valid_until]
         )
-    }
+        const budget = budgetResult.rows[0]
 
-    return budget
-}
+        for (const service of toolInput.services) {
+            await pool.query(
+                'INSERT INTO budget_services (budget_id, service_id, quantity, unit_price) VALUES ($1, $2, $3, $4)',
+                [budget.id, service.service_id, service.quantity, service.unit_price]
+            )
+        }
+
+        return budget
+    }
 }
 
 
@@ -323,9 +330,7 @@ assistantRouter.post('/', async (req, res) => {
         let response = await client.messages.create({
             model: process.env.ANTHROPIC_MODEL,
             max_tokens: 1234,
-            system: 'You are a project management assistant for Essedi. Always respond in the same language the user writes in. Do not use tables, use simple list and make it user friendly. When the usar has done, should answer with an specific word [CLOSE]',
-            tools: tools,
-            messages: messages
+            system: 'You are a project management assistant for Essedi. ALWAYS use the available tools to fetch real data before answering any question about tasks, projects, clients or services. Never assume data is empty without checking with tools first. Always respond in the same language the user writes in. Do not use tables, use simple list and make it user friendly.', messages: messages
         })
         while (response.stop_reason === 'tool_use') {
             const toolBlock = response.content.find((block) => block.type === 'tool_use')
