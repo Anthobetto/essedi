@@ -195,10 +195,10 @@ export default function Projects() {
                                     </tr>
                                 ) : (
                                     projects.map((project) => (
-                                        <tr key={project.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50">
+                                        <tr key={project.id} className="border-b border-gray-50 transition-colors last:border-0 hover:bg-gray-50" onClick={() => router.push(`/projects/${project.id}`)}>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{project.name}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{project.company_name}</td>
-                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{project.status}</td>
+                                            <td className="px-4 py-3 text-left text-sm text-gray-600">{t(project.status)}</td>
                                             <td className="px-4 py-3 text-left text-sm text-gray-600">{new Date(project.created_at).toLocaleDateString()}</td>
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
