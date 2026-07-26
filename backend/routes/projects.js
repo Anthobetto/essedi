@@ -20,7 +20,8 @@ projectsRouter.get('/', async (req, res) => {
 
 projectsRouter.get('/:id', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM projects WHERE id = ($1)', [req.params.id])
+        const result = await pool.query( 'SELECT projects.*, clients.company_name FROM projects LEFT JOIN clients ON projects.client_id = clients.id WHERE projects.id = $1',
+            [req.params.id])
         res.json(result.rows[0])
     }
     catch (error) {

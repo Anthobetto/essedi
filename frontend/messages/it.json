@@ -114,7 +114,9 @@
     "pending": "In attesa",
     "in_progress": "In corso",
     "completed": "Completata",
-    "cancelled": "Annullata"
+    "cancelled": "Annullata",
+    "relatedTasks": "Attività correlate",
+    "closeProject": "Chiudi progetto"
   },
   "users": {
     "title": "Utenti",
