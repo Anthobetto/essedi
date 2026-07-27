@@ -7,6 +7,7 @@ import servicesRouter from './routes/services.js'
 import authRouter from './routes/auth.js'
 import assistantRouter from './routes/assistant.js'
 import uploadRouter from './routes/taskPhotos.js'
+import taskHourRouter from './routes/taskHours.js'
 import cors from 'cors'
 import dotenv from 'dotenv'
 dotenv.config()
@@ -26,6 +27,7 @@ app.use('/services', servicesRouter)
 app.use('/auth', authRouter)
 app.use('/assistant', assistantRouter)
 app.use('/taskPhotos', uploadRouter)
+app.use('/taskHours', taskHourRouter)
 
 app.listen(port, () => {
     console.log(`Server listening http://localhost:${port}`)

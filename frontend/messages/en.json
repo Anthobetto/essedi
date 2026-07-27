@@ -116,7 +116,8 @@
     "completed": "Completed",
     "cancelled": "Cancelled",
     "relatedTasks": "Related Tasks",
-    "closeProject": "Close project"
+    "closeProject": "Close project",
+    "workHours": "Work hours"
   },
   "users": {
     "title": "Users",

@@ -116,7 +116,8 @@
     "completed": "Completata",
     "cancelled": "Annullata",
     "relatedTasks": "Attività correlate",
-    "closeProject": "Chiudi progetto"
+    "closeProject": "Chiudi progetto",
+    "workHours": "Ore lavorate"
   },
   "users": {
     "title": "Utenti",
