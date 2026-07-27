@@ -13,10 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Essedi",
-  description: "Service Management",
-  manifest: "/manifest.json",
-  themeColor: "#0c1a3d",
+    title: "Essedi",
+    description: "Service Management",
+    manifest: "/manifest.json",
+    themeColor: "#0c1a3d",
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: "default",
+    },
+    icons: {
+        apple: "/icon-192.png",
+    }
 };
 
 export default function RootLayout({
