@@ -15,7 +15,7 @@ export default function TaskId() {
     const [uploadedPhotos, setUploadedPhotos] = useState<{ url: string }[]>([])
     const [success, setSuccess] = useState(false)
     const [currentUserId, setCurrentUserId] = useState<number | null>(null)
-    const [taskHours, setTaskHours] = useState<{ id: number, task_id: number, user_id: number, user_name: string, start_time: string, end_time: string, notes: string }[]>([])
+    const [taskHours, setTaskHours] = useState<{ id: number, task_id: number, user_id: number, name: string, start_time: string, end_time: string, notes: string }[]>([])
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [notes, setNotes] = useState('')
@@ -173,7 +173,7 @@ export default function TaskId() {
                                     <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('assignees')}</dt>
                                     <dd className="text-sm font-medium text-gray-900">
                                         {task.assignees?.map(a => (
-                                            <div key={a.id} className="flex flex-col">
+                                            <div key={a.id} className="flex items-center gap-2">
                                                 <span className="text-sm font-medium text-gray-900">{a.name}</span>
                                                 {a.id === currentUserId ? (
                                                     <div className="flex flex-col gap-1">
@@ -209,15 +209,23 @@ export default function TaskId() {
                                             </div>
                                         ))}
                                     </dd>
-                                    {taskHours.map((hours) => (
-                                        <div key={hours.id} className="flex items-center justify-between border-b border-gray-100 py-2">
-                                            <span className="text-xs text-gray-500">{hours.user_name}</span>
-                                            <span className="text-sm text-gray-900">{new Date(hours.start_time).toLocaleTimeString()} - {new Date(hours.end_time).toLocaleTimeString()}</span>
-                                            <span className="text-xs text-gray-500">{hours.notes}</span>
-                                        </div>
-                                    ))}
+
                                 </div>
                             </dl>
+
+                        </div>
+
+                        <div className="rounded-2xl bg-white p-6 shadow-md sm:p-8">
+                            <h2 className="mb-6 text-sm font-semibold uppercase tracking-wide text-gray-400">
+                                {t('registeredHours')}
+                            </h2>
+                            {taskHours.map((hours) => (
+                                <div key={hours.id} className="grid grid-cols-3 border-b border-gray-100 py-2">
+                                    <span className="text-sm text-gray-900">{hours.name}</span>
+                                    <span className="text-sm text-gray-900 text-center">{new Date(hours.start_time).toLocaleTimeString()} - {new Date(hours.end_time).toLocaleTimeString()}</span>
+                                    <span className="text-xs text-gray-500 text-right">{hours.notes}</span>
+                                </div>
+                            ))}
                         </div>
 
                         <div className="rounded-2xl bg-white p-6 shadow-md sm:p-8">
