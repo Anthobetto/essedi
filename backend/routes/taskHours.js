@@ -22,6 +22,7 @@ taskHourRouter.post('/', async (req, res) => {
         res.json(result.rows[0])
     } catch (error) {
         res.status(500).json({ error: error.message })
+        console.log('HOURS ERROR:', error.message)
     }
 })
 export default taskHourRouter
