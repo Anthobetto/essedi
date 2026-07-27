@@ -18,7 +18,7 @@ taskHourRouter.get('/:task_id', async (req, res) => {
 
 taskHourRouter.post('/', async (req, res) => {
     try {
-        const result = await pool.query('INSERT INTO task_hours (task_id, user_id, start_time, end_time, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *', [req.body.task_id, req.body.user_id, req.body.start_time, req.body.end_time, req.body.notes])
+        const result = await pool.query('INSERT INTO task_hours (task_id, user_id, start_time, end_time, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *', [req.body.task_id, req.user.id, req.body.start_time, req.body.end_time, req.body.notes])
         res.json(result.rows[0])
     } catch (error) {
         res.status(500).json({ error: error.message })
