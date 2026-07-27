@@ -8,7 +8,7 @@ taskHourRouter.use(authenticateToken)
 
 taskHourRouter.get('/:task_id', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM task_hours WHERE task_id = $1', [req.params.task_id])
+        const result = await pool.query('SELECT task_hours.*, users.name FROM task_hours LEFT JOIN users ON task_hours.user_id = users.id WHERE task_id = $1', [req.params.task_id])
         res.json(result.rows)
     } catch (error) {
         res.status(500).json({ error: error.message })
