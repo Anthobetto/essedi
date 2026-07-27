@@ -15,6 +15,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Essedi",
   description: "Service Management",
+  manifest: "/manifest.json",
+  themeColor: "#0c1a3d",
 };
 
 export default function RootLayout({
