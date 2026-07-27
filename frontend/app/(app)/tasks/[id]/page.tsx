@@ -15,7 +15,7 @@ export default function TaskId() {
     const [uploadedPhotos, setUploadedPhotos] = useState<{ url: string }[]>([])
     const [success, setSuccess] = useState(false)
     const [currentUserId, setCurrentUserId] = useState<number | null>(null)
-    const [taskHours, setTaskHours] = useState<{ id: number, task_id: number, user_id: number, start_time: string, end_time: string, notes: string }[]>([])
+    const [taskHours, setTaskHours] = useState<{ id: number, task_id: number, user_id: number, user_name: string, start_time: string, end_time: string, notes: string }[]>([])
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
     const [notes, setNotes] = useState('')
@@ -106,16 +106,20 @@ export default function TaskId() {
 
     const saveHours = async () => {
         const token = localStorage.getItem('token')
+        const today = new Date().toISOString().split('T')[0]
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskHours`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ id, startTime, endTime, notes })
+            body: JSON.stringify({ task_id: id, start_time: `${today} ${startTime}`, end_time: `${today} ${endTime}`, notes })
         })
         const data = await response.json()
         setTaskHours([...taskHours, data])
+        setStartTime('')
+        setEndTime('')
+        setNotes('')
     }
 
 
@@ -180,7 +184,7 @@ export default function TaskId() {
                                                             <option value="cancelled">{t('cancelled')}</option>
                                                         </select>
                                                         <div className="mt-3">
-                                                            <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('workHours')}</dt>
+                                                            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('workHours')}</p>
                                                             <input type="time" onChange={(e) => setStartTime(e.target.value)} />
                                                             <input type="time" onChange={(e) => setEndTime(e.target.value)} />
                                                             <input type="text" onChange={(e) => setNotes(e.target.value)} />
@@ -192,13 +196,6 @@ export default function TaskId() {
                                                             >
                                                                 {t('save')}
                                                             </button>
-                                                            {taskHours.map((hours) => (
-                                                                <div key={hours.id}>
-                                                                    <p>{hours.start_time}</p>
-                                                                    <p>{hours.end_time}</p>
-                                                                    <p>{hours.notes}</p>
-                                                                </div>
-                                                            ))}
                                                         </div>
                                                     </div>
 
@@ -212,6 +209,13 @@ export default function TaskId() {
                                             </div>
                                         ))}
                                     </dd>
+                                    {taskHours.map((hours) => (
+                                        <div key={hours.id} className="flex items-center justify-between border-b border-gray-100 py-2">
+                                            <span className="text-xs text-gray-500">{hours.user_name}</span>
+                                            <span className="text-sm text-gray-900">{new Date(hours.start_time).toLocaleTimeString()} - {new Date(hours.end_time).toLocaleTimeString()}</span>
+                                            <span className="text-xs text-gray-500">{hours.notes}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </dl>
                         </div>
