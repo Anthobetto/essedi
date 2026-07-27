@@ -15,6 +15,10 @@ export default function TaskId() {
     const [uploadedPhotos, setUploadedPhotos] = useState<{ url: string }[]>([])
     const [success, setSuccess] = useState(false)
     const [currentUserId, setCurrentUserId] = useState<number | null>(null)
+    const [taskHours, setTaskHours] = useState<{ id: number, task_id: number, user_id: number, start_time: string, end_time: string, notes: string }[]>([])
+    const [startTime, setStartTime] = useState('')
+    const [endTime, setEndTime] = useState('')
+    const [notes, setNotes] = useState('')
 
     const fetchUploadedPhotos = async () => {
         const token = localStorage.getItem('token')
@@ -42,8 +46,18 @@ export default function TaskId() {
             setTask(data)
         }
 
+        const fetchRecordedHours = async () => {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskHours/${id}`, {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            const data = await response.json()
+            setTaskHours(data)
+        }
+
         fetchTask()
         fetchUploadedPhotos()
+        fetchRecordedHours()
     }, [])
 
     const uploadPhotos = async () => {
@@ -89,6 +103,21 @@ export default function TaskId() {
             default: return 'bg-gray-100 text-gray-600'
         }
     }
+
+    const saveHours = async () => {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/taskHours`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ id, startTime, endTime, notes })
+        })
+        const data = await response.json()
+        setTaskHours([...taskHours, data])
+    }
+
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -140,20 +169,44 @@ export default function TaskId() {
                                     <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('assignees')}</dt>
                                     <dd className="text-sm font-medium text-gray-900">
                                         {task.assignees?.map(a => (
-                                            <div key={a.id} className="flex items-center gap-2">
+                                            <div key={a.id} className="flex flex-col">
                                                 <span className="text-sm font-medium text-gray-900">{a.name}</span>
                                                 {a.id === currentUserId ? (
-                                                    <select value={a.status} onChange={(e) => updateMyStatus(e.target.value)} className="rounded-md border border-gray-100 px-2 py-1 text-xs">
-                                                        <option value="pending">{t('pending')}</option>
-                                                        <option value="in_progress">{t('in_progress')}</option>
-                                                        <option value="completed">{t('completed')}</option>
-                                                        <option value="cancelled">{t('cancelled')}</option>
-                                                    </select>
+                                                    <div className="flex flex-col gap-1">
+                                                        <select value={a.status} onChange={(e) => updateMyStatus(e.target.value)} className="rounded-md border border-gray-100 px-2 py-1 text-xs">
+                                                            <option value="pending">{t('pending')}</option>
+                                                            <option value="in_progress">{t('in_progress')}</option>
+                                                            <option value="completed">{t('completed')}</option>
+                                                            <option value="cancelled">{t('cancelled')}</option>
+                                                        </select>
+                                                        <div className="mt-3">
+                                                            <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{t('workHours')}</dt>
+                                                            <input type="time" onChange={(e) => setStartTime(e.target.value)} />
+                                                            <input type="time" onChange={(e) => setEndTime(e.target.value)} />
+                                                            <input type="text" onChange={(e) => setNotes(e.target.value)} />
+                                                            <button
+                                                                className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                                                                onClick={() => {
+                                                                    saveHours()
+                                                                }}
+                                                            >
+                                                                {t('save')}
+                                                            </button>
+                                                            {taskHours.map((hours) => (
+                                                                <div key={hours.id}>
+                                                                    <p>{hours.start_time}</p>
+                                                                    <p>{hours.end_time}</p>
+                                                                    <p>{hours.notes}</p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
                                                 ) : (
                                                     <span className={`text-xs rounded-full px-2 py-0.5 ${a.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                                            a.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
-                                                                a.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                                    'bg-red-100 text-red-700'
+                                                        a.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                                                            a.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                                'bg-red-100 text-red-700'
                                                         }`}>{a.status ? t(a.status) : ''}</span>
                                                 )}
                                             </div>
