@@ -333,16 +333,25 @@ assistantRouter.post('/', async (req, res) => {
             messages: messages
         })
         while (response.stop_reason === 'tool_use') {
-            const toolBlock = response.content.find((block) => block.type === 'tool_use')
-            const toolResult = await executeTool(toolBlock.name, toolBlock.input)
+            const toolBlocks = response.content.filter((block) => block.type === 'tool_use')
+            console.log('TOOL BLOCKS::', toolBlocks)
+            const toolResults = []
+            for (const tool of toolBlocks) {
+                const result = await executeTool(tool.name, tool.input)
+                console.log('EXECUTE TOOLS', tool.name, tool.input, result)
+                toolResults.push(
+                    {
+                        type: 'tool_result',
+                        tool_use_id: tool.id,
+                        content: JSON.stringify(result)
+                    }
+                )
+            }
+            console.log('TOOL RESULTS', toolResults)
             messages.push({ role: 'assistant', content: response.content })
             messages.push({
                 role: 'user',
-                content: [{
-                    type: 'tool_result',
-                    tool_use_id: toolBlock.id,
-                    content: JSON.stringify(toolResult)
-                }]
+                content: toolResults
             })
             response = await client.messages.create({
                 model: process.env.ANTHROPIC_MODEL,
@@ -353,13 +362,16 @@ assistantRouter.post('/', async (req, res) => {
             })
         }
 
+
         const finalText = response.content
+        console.log('Response:', finalText)
         const filteredText = finalText.filter((block) => block.type === 'text')
         const mapedText = filteredText.map((line) => line.text)
 
 
         res.json(mapedText)
     } catch (error) {
+        console.log('ERROR:', error.message, error)
         res.status(500).json({ error: error.message })
     }
 })
