@@ -246,6 +246,28 @@ const tools = [
             },
             required: ['number', 'client_id', 'services']
         }
+    },
+    {
+        name: 'assign_user_to_task',
+        description: 'Assign user a task or multiple task',
+        input_schema: {
+            type: 'object',
+            properties: {
+                task_id: {
+                    type: 'integer',
+                    description: 'ID of the assigne task. Use search_tasks first to get the ID of the task belogns to.'
+                },
+                user_id: {
+                    type: 'integer',
+                    description: 'ID of the user'
+                },
+                status: {
+                    type: 'string',
+                    description: 'Initial task status: pending, in_progress, started, or ended. Defaults to pending.'
+                }
+            },
+            required: ['task_id', 'user_id']
+        },
     }
 
 ]
@@ -287,7 +309,7 @@ async function executeTool(toolName, toolInput) {
         return result.rows
     }
     if (toolName === 'create_project') {
-        const result = await pool.query('INSERT INTO projects (name, client_id, status, end_date, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *', [toolInput.name, toolInput.client_id, toolInput.status, toolInput.end_date, toolInput.notes])
+        const result = await pool.query('INSERT INTO projects (name, client_id, status, end_date, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *', [toolInput.name, toolInput.client_id, toolInput.status || 'pending', toolInput.end_date, toolInput.notes])
         return result.rows
     }
     if (toolName === 'create_task') {
@@ -315,6 +337,10 @@ async function executeTool(toolName, toolInput) {
         }
 
         return budget
+    }
+    if (toolName === 'assign_user_to_task') {
+        const result = await pool.query('INSERT INTO task_user (task_id, user_id, status) VALUES ($1, $2, $3) RETURNING *', [toolInput.task_id, toolInput.user_id, toolInput.status || 'pending'])
+        return result.rows
     }
 }
 
