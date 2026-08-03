@@ -1,4 +1,5 @@
 import express from 'express'
+import dotenv from 'dotenv'
 import clientsRouter from './routes/clients.js'
 import projectsRouter from './routes/projects.js'
 import tasksRouter from './routes/tasks.js'
@@ -9,8 +10,8 @@ import assistantRouter from './routes/assistant.js'
 import uploadRouter from './routes/taskPhotos.js'
 import taskHourRouter from './routes/taskHours.js'
 import cors from 'cors'
-import dotenv from 'dotenv'
 dotenv.config()
+
 
 const port = process.env.PORT || 4821
 const app = express()

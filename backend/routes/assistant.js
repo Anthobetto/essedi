@@ -360,11 +360,9 @@ assistantRouter.post('/', async (req, res) => {
         })
         while (response.stop_reason === 'tool_use') {
             const toolBlocks = response.content.filter((block) => block.type === 'tool_use')
-            console.log('TOOL BLOCKS::', toolBlocks)
             const toolResults = []
             for (const tool of toolBlocks) {
                 const result = await executeTool(tool.name, tool.input)
-                console.log('EXECUTE TOOLS', tool.name, tool.input, result)
                 toolResults.push(
                     {
                         type: 'tool_result',
@@ -373,7 +371,6 @@ assistantRouter.post('/', async (req, res) => {
                     }
                 )
             }
-            console.log('TOOL RESULTS', toolResults)
             messages.push({ role: 'assistant', content: response.content })
             messages.push({
                 role: 'user',
@@ -390,7 +387,6 @@ assistantRouter.post('/', async (req, res) => {
 
 
         const finalText = response.content
-        console.log('Response:', finalText)
         const filteredText = finalText.filter((block) => block.type === 'text')
         const mapedText = filteredText.map((line) => line.text)
 
