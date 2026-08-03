@@ -89,7 +89,7 @@
     "date": "Data",
     "pending": "In attesa",
     "in_progress": "In corso",
-    "completed": "Completata",
+    "completed": "Terminata",
     "cancelled": "Annullata",
     "assignees": "Assegnatari",
     "deleteConfirm": "Sei sicuro di voler eliminare questa attività?"
@@ -113,7 +113,7 @@
     "assignees": "Assegnatari",
     "pending": "In attesa",
     "in_progress": "In corso",
-    "completed": "Completata",
+    "completed": "Terminata",
     "cancelled": "Annullata",
     "relatedTasks": "Attività correlate",
     "closeProject": "Chiudi progetto",
