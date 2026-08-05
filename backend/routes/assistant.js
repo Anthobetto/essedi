@@ -97,6 +97,36 @@ const tools = [
         }
     },
     {
+        name: 'create_user',
+        description: 'Creates a new user in the database with their contact details.',
+        input_schema: {
+            type: 'object',
+            properties: {
+                name: {
+                    type: 'string',
+                    description: 'User name.'
+                },
+                role: {
+                    type: 'string',
+                    description: 'role: worker or admin. Defaults  worker.'
+                },
+                phone: {
+                    type: 'string',
+                    description: 'User phone number.'
+                },
+                email: {
+                    type: 'string',
+                    description: 'User email address.'
+                },
+                password: {
+                    type: 'string',
+                    description: 'User password address.'
+                }
+            },
+            required: ['name', 'role', 'email', 'password']
+        }
+    },
+    {
         name: 'create_client',
         description: 'Creates a new client in the database with their contact details.',
         input_schema: {
@@ -303,6 +333,18 @@ async function executeTool(toolName, toolInput) {
         return result.rows
 
     }
+    if (toolName === 'create_user') {
+        const plainPassword = toolInput.password
+        const hashedPassword = await bcrypt.hash(plainPassword, 10)
+        const role = toolInput.role
+        if (role === 'superadmin') {
+            return { message: 'Forbidden' }
+        }
+        const result = await pool.query(
+            'INSERT INTO users (name, role, phone, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *', [toolInput.name, toolInput.role, toolInput.phone, toolInput.email, hashedPassword])
+
+        return result.rows
+    }
     if (toolName === 'create_client') {
         const result = await pool.query(
             'INSERT INTO clients (company_name, contact_name, phone, email, address) VALUES ($1, $2, $3, $4, $5) RETURNING *', [toolInput.company_name, toolInput.contact_name, toolInput.phone, toolInput.email, toolInput.address])
@@ -349,8 +391,7 @@ assistantRouter.use(authenticateToken)
 
 assistantRouter.post('/', async (req, res) => {
     try {
-        const { message } = req.body
-        const messages = [{ role: 'user', content: message }]
+        const { messages } = req.body
         let response = await client.messages.create({
             model: process.env.ANTHROPIC_MODEL,
             max_tokens: 1234,
