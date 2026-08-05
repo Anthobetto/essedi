@@ -9,11 +9,10 @@ export default function AssistantWidget() {
     const [isOpen, setIsOpen] = useState(false)
     const [input, setInput] = useState('')
     const [messages, setMessages] = useState<{ role: string, content: string }[]>([])
-    const messagesEndRef = useRef <HTMLDivElement>(null)
+    const messagesEndRef = useRef<HTMLDivElement>(null)
 
     const saveNewMessage = async () => {
         const token = localStorage.getItem('token')
-        setMessages([...messages, { role: 'user', content: input }])
         setInput('')
         const userMessage = { role: 'user', content: input }
         const updatedMessages = [...messages, userMessage]
@@ -23,12 +22,12 @@ export default function AssistantWidget() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ message: input })
+            body: JSON.stringify({ messages: updatedMessages })
         })
 
         const data = await response.json()
         setMessages([...updatedMessages, { role: 'assistant', content: data[0] }])
-        }
+    }
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -95,7 +94,7 @@ export default function AssistantWidget() {
                 aria-label={isOpen ? "Close assistant" : "Open assistant"}
             >
                 {isOpen ? (
-                    <h2 onClick={() => {setMessages([]); setIsOpen(false)}}>X</h2>
+                    <h2 onClick={() => { setMessages([]); setIsOpen(false) }}>X</h2>
                 ) : (
                     <h2>AI</h2>
                 )}
