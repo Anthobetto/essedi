@@ -2,6 +2,7 @@ import express from 'express'
 import pool from '../db.js'
 import authenticateToken from '../middleware/auth.js'
 import Anthropic from '@anthropic-ai/sdk'
+import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 dotenv.config()
 
