@@ -15,6 +15,8 @@ export default function AssistantWidget() {
         const token = localStorage.getItem('token')
         setMessages([...messages, { role: 'user', content: input }])
         setInput('')
+        const userMessage = { role: 'user', content: input }
+        const updatedMessages = [...messages, userMessage]
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assistant`, {
             method: 'POST',
             headers: {
@@ -25,8 +27,6 @@ export default function AssistantWidget() {
         })
 
         const data = await response.json()
-        const userMessage = { role: 'user', content: input }
-        const updatedMessages = [...messages, userMessage]
         setMessages([...updatedMessages, { role: 'assistant', content: data[0] }])
         }
 
