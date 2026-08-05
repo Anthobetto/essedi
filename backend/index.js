@@ -16,7 +16,7 @@ dotenv.config()
 const port = process.env.PORT || 4821
 const app = express()
 
-app.use(cors({ origin: ['http://localhost:3000', 'https://essedi-production-6264.up.railway.app'] }))
+app.use(cors({ origin: ['http://localhost:3000', 'https://essedi-production-6264.up.railway.app', 'https://essedi-1.onrender.com'] }))
 
 app.use(express.json())
 
