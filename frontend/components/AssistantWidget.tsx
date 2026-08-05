@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRef } from "react"
 import { useEffect } from "react"
 import ReactMarkdown from 'react-markdown'
+import { MessageCircleX, SquareMinus } from 'lucide-react';
 
 export default function AssistantWidget() {
     const [isOpen, setIsOpen] = useState(false)
@@ -13,9 +14,11 @@ export default function AssistantWidget() {
 
     const saveNewMessage = async () => {
         const token = localStorage.getItem('token')
-        setInput('')
         const userMessage = { role: 'user', content: input }
         const updatedMessages = [...messages, userMessage]
+        setMessages(updatedMessages)
+        setInput('')
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assistant`, {
             method: 'POST',
             headers: {
@@ -45,7 +48,6 @@ export default function AssistantWidget() {
                             </span>
                             <div className="flex flex-col leading-tight">
                                 <span className="text-sm font-semibold">Essedi Assistant</span>
-                                <span className="text-xs text-blue-200">Online</span>
                             </div>
                         </div>
                         <button
@@ -53,7 +55,7 @@ export default function AssistantWidget() {
                             className="rounded-md p-1 text-blue-200 transition-colors hover:bg-blue-900 hover:text-white"
                             aria-label="Close assistant"
                         >
-                            __
+                            <SquareMinus />
                         </button>
                     </div>
 
@@ -69,10 +71,10 @@ export default function AssistantWidget() {
 
                     {/* Input */}
                     <div className="flex items-center gap-2 border-t border-gray-200 bg-white px-3 py-3">
-                        <input
-                            type="text"
+                        <textarea
                             placeholder="Type a message..."
-                            className="flex-1 rounded-full border border-gray-300 bg-gray-50 px-4 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-blue-950 focus:bg-white"
+                            rows={1}
+                            className="flex-1 resize-none rounded-2xl border border-gray-300 bg-gray-50 px-4 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-blue-950 focus:bg-white"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                         />
@@ -94,9 +96,17 @@ export default function AssistantWidget() {
                 aria-label={isOpen ? "Close assistant" : "Open assistant"}
             >
                 {isOpen ? (
-                    <h2 onClick={() => { setMessages([]); setIsOpen(false) }}>X</h2>
+                    <span
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setMessages([])
+                            setIsOpen(false)
+                        }}
+                    >
+                        <MessageCircleX />
+                    </span>
                 ) : (
-                    <h2>AI</h2>
+                    <span>AI</span>
                 )}
             </button>
         </div>
