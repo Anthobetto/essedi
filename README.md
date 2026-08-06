@@ -1,4 +1,4 @@
-[🇬🇧 English](#english) | [🇪🇸 Español](#espanol) | [🇮🇹 Italiano](#italiano)
+[🇬🇧 English](#english) | [🇪🇸 Español](#espanol)
 
 ---
 
