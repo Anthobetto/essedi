@@ -8,6 +8,10 @@
   </a>
 </p>
 
+<p align="center">
+  <code>Email: d20604104+essediworker@gmail.com</code> · <code>Password: Demo2026</code>
+</p>
+
 ---
 
 <a id="english"></a>
