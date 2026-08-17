@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <code>Email: d20604104+essediworker@gmail.com</code> · <code>Password: Demo2026</code>
+  <code>Email: d20604104+essedi@gmail.com</code> · <code>Password: Demo2026</code>
 </p>
 
 ---
